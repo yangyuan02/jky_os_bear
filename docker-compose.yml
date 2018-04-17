@@ -1,0 +1,15 @@
+version: '3'
+services:
+  app:
+    build: .
+    container_name: fronted_bear
+    command: yarn run dev
+    volumes:
+        - .:/usr/src/app:cached
+    ports:
+      - "8080:8080"
+
+networks:
+  default:
+    external:
+      name: thrive_jky_bear
