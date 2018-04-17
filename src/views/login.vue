@@ -12,7 +12,7 @@
               <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
             </el-form-item>
             <div class="login-btn">
-              <el-button type="primary" @click="submitForm('ruleForm')">登录</el-button>
+              <el-button type="primary">登录</el-button>
             </div>
           </el-form>
         </div>
@@ -46,34 +46,34 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="less">
   .login-wrap {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #324157
-  }
-  .login-wrap .login_box {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .login-wrap .login_box .login_content {
-    height: 240px;
-    width: 340px;
-    background: #fff;
-    padding: 40px;
-    border-radius: 4px;
-    margin-top: 30px;
-  }
-  .login-wrap .login_content .login-btn button {
-    width: 100%;
-    height: 36px;
-  }
-  .login-wrap .login_box .ms-title {
-    font-size: 30px;
-    color: #fff;
+    background: #324157;
+    .login_box{
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      .login_content{
+        height: 240px;
+        width: 340px;
+        background: #fff;
+        padding: 40px;
+        border-radius: 4px;
+        margin-top: 30px;
+        .login-btn button{
+          width: 100%;
+          height: 36px;
+        }
+      }
+    }
+    .ms-title{
+      font-size: 30px;
+      color: #fff;
+    }
   }
 </style>
