@@ -7,13 +7,17 @@ const Home = r => require.ensure([], () => r(require('@/views/home')), 'Home')
 
 const error = r => require.ensure([], () => r(require('@/components/common/error')), 'error')
 
-const IndexMain =  r => require.ensure([], () => r(require('@/views/level01/main')), 'IndexMain')
+const IndexMain = r => require.ensure([], () => r(require('@/views/level01/main')), 'IndexMain')
 
 Vue.use(Router)
 
 export default new Router({
-  mode:'history',
+  mode: 'history',
   routes: [
+    {
+      path: '/',
+      redirect: '/login'
+    },
     {
       path: '/login',
       name: 'login',
@@ -23,7 +27,7 @@ export default new Router({
       path: '/home',
       name: 'home',
       component: Home,
-      children:[
+      children: [
         {
           path: '/',
           name: 'IndexMain',
@@ -35,6 +39,6 @@ export default new Router({
       path: '*',
       name: 'error',
       component: error
-  }
+    }
   ]
 })
