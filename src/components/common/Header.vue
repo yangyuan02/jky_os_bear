@@ -1,5 +1,7 @@
 <template>
-  <Header></Header>
+  <Header>
+    省级政府履行教育职责测评系统
+  </Header>
 </template>
 
 <script>
@@ -11,9 +13,12 @@ export default {
 <style>
 
   Header{
-    height: 40px;
+    height: 100%;
     width: 100%;
-    background: red;
+    color: #fff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
   }
 
 </style>
