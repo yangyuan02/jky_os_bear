@@ -7,7 +7,9 @@ const Home = r => require.ensure([], () => r(require('@/views/home')), 'Home')
 
 const error = r => require.ensure([], () => r(require('@/components/common/error')), 'error')
 
-const IndexMain = r => require.ensure([], () => r(require('@/views/level01/main')), 'IndexMain')
+const IndexMain = r => require.ensure([], () => r(require('@/views/level01/main')), 'IndexMain')//进行中的计划
+
+const IndexMainDetail = r => require.ensure([], () => r(require('@/views/level01/detail')), 'IndexMainDetail')//设计工作详情
 
 Vue.use(Router)
 
@@ -32,6 +34,11 @@ export default new Router({
           path: '/',
           name: 'IndexMain',
           component: IndexMain
+        },
+        {
+          path: '/home/detail',
+          name: 'IndexMainDetail',
+          component: IndexMainDetail
         },
       ]
     },
