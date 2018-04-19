@@ -39,12 +39,11 @@
         height:100%;
         .el-aside{
           height: 100%;
-          background-color: rgb(84, 92, 100);
         }
         .el-main{
           width: calc(100% - 200px);
           height: 100%;
-          background: yellow;
+          background: #fff;
         }
       }
     }
