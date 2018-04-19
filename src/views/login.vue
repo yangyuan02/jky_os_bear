@@ -6,13 +6,13 @@
                 <div class="ms-login">
                     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                         <el-form-item prop="username">
-                            <el-input v-model="ruleForm.username" placeholder="username"></el-input>
+                            <el-input v-model="ruleForm.account" placeholder="username"></el-input>
                         </el-form-item>
                         <el-form-item prop="password">
                             <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
                         </el-form-item>
-                        <div class="login-btn">
-                            <el-button type="primary">登录22aaa</el-button>
+                        <div class="login-btn" @click="login">
+                            <el-button type="primary">登录</el-button>
                         </div>
                     </el-form>
                 </div>
@@ -22,11 +22,13 @@
 </template>
 
 <script>
+
+    import jsrsasign from 'jsrsasign'
     export default {
         data() {
             return {
                 ruleForm: {
-                    username: '',
+                    account: '',
                     password: ''
                 },
                 rules: {
@@ -48,6 +50,18 @@
                 this.$ajax.get("/api/captcha/show", {}).then((res) => {
                     console.log(res)
                 }, (err) => {})
+            },
+            login(){
+                // console.log(this.ruleForm.username)
+                this.$ajax.post("/api/admin_token",this.ruleForm).then((res)=>{
+                    if (res.data.jwt) {
+                        var token = res.data.jwt
+                        var user = jsrsasign.KJUR.jws.JWS.parse(token).payloadObj
+                        console.log(user)
+                        window.localStorage.setItem("token", JSON.stringify(token))
+                        this.$router.push('./home')
+                    }
+                },(err)=>{})
             }
         },
         mounted(){
