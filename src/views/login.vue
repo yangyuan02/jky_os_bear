@@ -12,7 +12,7 @@
               <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
             </el-form-item>
             <div class="login-btn">
-              <el-button type="primary">登录22aaa</el-button>
+              <el-button type="primary" @click="login()">登录</el-button>
             </div>
           </el-form>
         </div>
@@ -41,6 +41,28 @@
             trigger: 'blur'
           }]
         }
+      }
+    },
+    methods:{
+      login(){
+         this.$ajax({
+            method: 'POST',
+            url: '/api/admin_token',
+            data: {
+                account: this.ruleForm.username,
+                password: this.ruleForm.password
+            },
+        })
+        .then(res=>{
+            console.log(res);
+            if(res.data.jwt){
+              this.$router.push('./home')
+            }
+        })
+        .catch(error=>{
+            console.log(error);
+            alert(error);
+        })
       }
     }
   }

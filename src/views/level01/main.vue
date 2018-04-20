@@ -6,8 +6,8 @@
         <li @click="dialogFormVisible = true">
           <i class="el-icon-plus"></i>
         </li>
-        <li class="on-li">
-            <p class="plan-name">设计工作</p>
+        <li class="on-li" v-for="onPlain in onPlainList" :data-id="onPlain.id">
+            <p class="plan-name">{{onPlain.name}}</p>
             <p class="roles">
               <span class="roles-left">角色</span>
               <span class="roles-right">10个</span>
@@ -31,8 +31,8 @@
     <div class="content finished-plan">
       <p class="title">已归档的计划</p>
       <ul class="on-plan-list finished-plan-list">
-        <li class="on-li">
-            <p class="plan-name">设计工作</p>
+        <li class="on-li" v-for="filePlain in filePlainList" :data-id="filePlain.id">
+            <p class="plan-name">{{filePlain.name}}</p>
             <p class="roles">
               <span class="roles-left">角色</span>
               <span class="roles-right">10个</span>
@@ -44,9 +44,7 @@
       </ul>
     </div>
     <!-- Form -->
-<!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
-
-    <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
+    <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%" @close='closeDialog'>
       <el-form :model="form">
         <el-form-item label="名称" :label-width="formLabelWidth">
           <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
@@ -54,7 +52,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <!-- <el-button @click="dialogFormVisible = false">取 消</el-button> -->
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="submitName">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -62,25 +60,77 @@
 
 <script>
 export default {
-   data() {
-      return {
-        dialogTableVisible: false,
-        dialogFormVisible: false,
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
-        formLabelWidth: '60px'
-      };
-    },
-  methods:{
+  data() {
+    return {
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '60px',
+      planLists:[],
+      onPlainList:[],
+      filePlainList:[]
+    };
+  },
+  created(){
+    this.getAllplan();
     
+  },
+  computed:{
+  },
+  methods:{
+    getAllplan(){
+      this.$ajax({
+        method: 'GET',
+        url: '/api/admin/plans',
+      })
+      .then(res=>{
+          if(res.status==200){
+            // 全部计划
+            this.planLists = res.data.data;
+            // 筛选出正在进行的计划
+            this.onPlainList = this.planLists.filter(function (data) {
+                return data.state == 'active'
+            });
+            // 筛选已经归档的计划
+            this.filePlainList = this.planLists.filter(function (data) {
+                return data.state == 'archived'
+            });
+          }
+      })
+      .catch(error=>{
+          console.log(error);
+          alert(error);
+      })
+    },
+    closeDialog(){
+      this.form.name='';
+    },
+    submitName(){
+      this.$ajax({
+        method: 'POST',
+        url: '/api/admin/plans',
+        data:{
+          name: this.form.name,
+          state:'active'
+        }
+      })
+      .then(res=>{
+        console.log(res.data,res.data.success)
+          if(res.data.success){
+            this.dialogFormVisible=false;
+            this.getAllplan();
+          }
+      })
+      .catch(error=>{
+          console.log(error);
+          alert(error);
+      })
+    }
   }
 }
 </script>
