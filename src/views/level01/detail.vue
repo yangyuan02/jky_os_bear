@@ -96,7 +96,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer"> 
           <el-checkbox v-model="checked" style="width:50%;float:left;text-align: left;margin-left: 5%;">是否与省份关联</el-checkbox>  
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addroles">确 定</el-button>
       </div>
     </el-dialog>
     <!--添加 -->
@@ -119,7 +119,7 @@
         </el-select>
         </el-form-item> 
        <el-form-item label="姓名:" label-width="50px">
-           <el-input v-model="form1.name" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
+           <el-input v-model="form1.name" auto-complete="off" placeholder="请输入内容" style="width:50%;margin-left:10px"></el-input>
        </el-form-item>
       <el-form-item label="手机号:" :label-width="formLabelWidth">
           <el-input v-model="form.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
@@ -191,7 +191,24 @@ export default {
       formLabelWidth: "60px"
     };
   },
-  methods: {}
+  methods: {
+    addroles:function(){//添加角色
+    this.dialogFormVisible = false
+     console.log(this.form.name)
+     console.log(this.value6)
+     console.log(this.checked)
+      // this.$ajax.post("/api/admin/plans",{"name":this.form.name, "plan_id":'',"province":'',"plan_id":'',
+      // "begin_at":'',"end_at":'',})
+      //      .then((res) => {
+      //               console.log(res)
+      //               if(res.data.success){
+      //                 this.dialogFormVisible=false;
+      //                 this.getYearPlansList();
+      //               }
+      //           },(err)=>{})
+    }
+    
+  }
 };
 </script>
 
