@@ -17,9 +17,9 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column prop="provinceWz" label="省份筛选">
+            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter">
             </el-table-column>
-            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="[{text:'省用户',value: '省用户' }, { text:'网评专家',value: '网评专家' },{ text:'实地专家',value: '实地专家' },{text:'督导',value: '督导' }]">
+            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter">
             </el-table-column>
             <el-table-column label="操作">
             </el-table-column>
@@ -70,6 +70,20 @@
                 form: {
                     name: ''
                 },
+                provinceFilter: [],
+                rolesFilter: [{
+                    text: '省用户',
+                    value: '省用户'
+                }, {
+                    text: '网评专家',
+                    value: '网评专家'
+                }, {
+                    text: '实地专家',
+                    value: '实地专家'
+                }, {
+                    text: '督导',
+                    value: '督导'
+                }],
                 formLabelWidth: '100px',
                 userList: [],
                 planLists: [],
@@ -77,15 +91,30 @@
                 province: JSON.parse(window.localStorage.getItem("provinces")),
                 valuePlans: {},
                 valueRoles: {},
-                valueProvince:{},
-                disabled:true,
-                user:{}
+                valueProvince: {},
+                disabled: true,
+                user: {}
             }
         },
+        // filters:{
+        // },
         methods: {
-            filterRole(value,row){//角色筛选
+            uniqArrar(arr) { //数组对象去重
+                var result = []
+                var number = []
+                for (var i = 0; i < arr.length; i++) {
+                    if (number.indexOf(arr[i].value == -1)) {
+                        number.push(arr[i].value)
+                        result.push(arr[i])
+                    }
+                }
+                return result
+            },
+            filterRole(value, row) { //角色筛选
                 return row.role == value
-                console.log(value,row)
+            },
+            filterProveince(value, row) { //省份筛选
+                return row.provinceWz == value
             },
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
@@ -97,7 +126,14 @@
                             if (item.province == this.province[i].code) {
                                 item.provinceWz = this.province[i].name
                             }
+                            if (item.province == null) {
+                                item.provinceWz = '未知'
+                            }
                         }
+                        let obj = {}
+                        obj.text = item.provinceWz
+                        obj.value = item.provinceWz
+                        this.provinceFilter.push(obj)
                     })
                     this.userList = data
                 }, (err) => {})
@@ -115,28 +151,28 @@
                 this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
                     this.rolesList = res.data.data
                     this.valueRoles = this.rolesList[0]
-                    this.valueProvince = this.rolesList[0].province ? this.province[0]:{}
+                    this.valueProvince = this.rolesList[0].province ? this.province[0] : {}
                     this.disabled = !this.rolesList[0].province
                 }, (err) => {})
             },
             selectPlans(value) { //选择年度计划列表
                 this.getRolesList(value.id)
             },
-            selectRoles(value){
-                this.valueProvince = value.province ? this.province[0]:{}
+            selectRoles(value) {
+                this.valueProvince = value.province ? this.province[0] : {}
                 this.disabled = !value.province
             },
-            addUser(){//添加用户
+            addUser() { //添加用户
                 var param = {
-                    "name":this.user.name,
-                    "mobile":this.user.tel,
-                    "plan_id":this.valuePlans.id,
-                    "role_id":this.valueRoles.id,
-                    "province":this.valueProvince.code
+                    "name": this.user.name,
+                    "mobile": this.user.tel,
+                    "plan_id": this.valuePlans.id,
+                    "role_id": this.valueRoles.id,
+                    "province": this.valueProvince.code
                 }
-                this.$ajax.post("/api/admin/users",param).then((res)=>{
+                this.$ajax.post("/api/admin/users", param).then((res) => {
                     console.log(res)
-                },(err)=>{})
+                }, (err) => {})
             }
         },
         mounted() {
