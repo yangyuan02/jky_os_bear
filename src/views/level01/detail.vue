@@ -7,12 +7,12 @@
         <li @click="dialogFormVisible = true">
           <i class="el-icon-plus"></i>
         </li>
-        <li class="on-li">
-            <p class="plan-name m15">网评专家用户</p>
+        <li class="on-li" v-for="(role,index) in roles">
+            <p class="plan-name m15">{{role.name}}</p>
             <p class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
-                <span class="roles-right">2018.6.1-6.30</span>
+                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(0,10).replace(/-/ig,'.')}}</span>
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
@@ -20,7 +20,7 @@
               </p>
             </p>
             <p class="plan-button m15">         
-              <span class="add-btn" @click="addVisible = true">
+              <span class="add-btn" @click="provinces()">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
               </span>
@@ -111,10 +111,10 @@
         <el-form-item label="省份：" :label-width="formLabelWidth">  
         <el-select v-model="value" placeholder="请选择">
          <el-option
-         v-for="item in form1.options"
-          :key="item.value"
-         :label="item.label"
-          :value="item.value">
+         v-for="area in areas"
+          :key="area.code"
+         :label="area.name"
+          :value="area.code">
           </el-option>
         </el-select>
         </el-form-item> 
@@ -151,6 +151,8 @@ export default {
       value:"",
       value6: "",
       checked: "",
+      roles:[],
+      areas:[],
       addVisible: false,
       dialogTableVisible: false,
       setVisible:false,
@@ -174,16 +176,6 @@ export default {
         type: [],
         resource: "",
         desc: "",
-        options: [{
-          value: '选项1',
-          label: '河南省'
-        }, {
-          value: '选项2',
-          label: '河北省'
-        }, {
-          value: '选项3',
-          label: '上海市'
-        }],
       },
       checkedname:[],
       names:['路师生', '王良铮', '刘以可', '赵雯', '赵学线'],
@@ -199,19 +191,28 @@ export default {
      console.log(this.form.name)
      console.log(this.value6[0])
      console.log(this.$route.params.planId)
-      this.$ajax.post("/api/admin/plans",{"name":this.form.name, "plan_id":this.$route.params.planId,"province":this.checked,
+      this.$ajax.post("/api/admin/roles",{"name":this.form.name, "plan_id":this.$route.params.planId,"province":this.checked,
       "begin_at":this.value6[0],"end_at":this.value6[1],})
            .then((res) => {
-                    console.log(res)
+                    this.roleslist()
                 },(err)=>{})
      },
-     roleslist:function(){
-      this.$ajax.get("/api/admin/roles",{})
+     roleslist:function(){//获取角色列表
+      this.$ajax.get('/api/admin/roles?plan_id='+this.$route.params.planId+'',{})
            .then((res) => {
+                    this.roles=res.data.data
                     console.log(res)
                 },(err)=>{})
      },
-    
+     provinces:function(){
+       this.$ajax.get("/api/provinces",{})
+           .then((res) => {
+                  this.addVisible = true
+                  this.areas=res.data
+                    console.log(this.areas)
+                },(err)=>{})
+     },
+     
   }
 };
 </script>
@@ -265,8 +266,9 @@ export default {
         }
         .roles {
           color: @text-color;
+          min-height: 35px;
           .roles-left {
-            padding-right: 30px;
+            padding-right:0px;
           }
         }
         .plan-button {
