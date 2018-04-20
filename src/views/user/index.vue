@@ -19,7 +19,7 @@
             </el-table-column>
             <el-table-column prop="provinceWz" label="省份筛选">
             </el-table-column>
-            <el-table-column prop="role" label="角色筛选">
+            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="[{text:'省用户',value: '省用户' }, { text:'网评专家',value: '网评专家' },{ text:'实地专家',value: '实地专家' },{text:'督导',value: '督导' }]">
             </el-table-column>
             <el-table-column label="操作">
             </el-table-column>
@@ -83,6 +83,10 @@
             }
         },
         methods: {
+            filterRole(value,row){//角色筛选
+                return row.role == value
+                console.log(value,row)
+            },
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
                     let data = res.data.data
