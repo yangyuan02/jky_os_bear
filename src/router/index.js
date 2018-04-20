@@ -14,6 +14,7 @@ const IndexMainDetail = r => require.ensure([], () => r(require('@/views/level01
 const user = r => require.ensure([], () => r(require('@/views/user/index')), 'user')
 const manage = r => require.ensure([], () => r(require('@/views/manage/index')), 'manage')
 
+const pointDetail = r => require.ensure([], () => r(require('@/views/pointDetail')), 'pointDetail')
 
 Vue.use(Router)
 
@@ -53,7 +54,11 @@ export default new Router({
                     path: '/home/manage',
                     name: 'manage',
                     component: manage
-                }
+                },{
+                    path: '/home/pointDetail',
+                    name: 'pointDetail',
+                    component: pointDetail
+                },
             ]
         },
         {

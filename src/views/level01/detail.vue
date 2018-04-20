@@ -4,7 +4,7 @@
     <div class="content on-plan">
       <p class="title">角色</p>
       <ul class="on-plan-list">
-        <li @click="dialogFormVisible = true">
+        <li @click="addroles_show">
           <i class="el-icon-plus"></i>
         </li>
         <li class="on-li" v-for="(role,index) in roles">
@@ -16,11 +16,11 @@
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
-                <span class="roles-right">10</span>
+                <span class="roles-right">{{role.users_count}}</span>
               </p>
             </div>
             <p class="plan-button m15">
-              <span class="add-btn" @click="addVisible = true">
+              <span class="add-btn" @click="addusers_show(index)">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
               </span>
@@ -80,12 +80,12 @@
     <el-dialog title="添加" :visible.sync="addVisible" width="30%">
        <el-form :model="form1">
         <el-form-item label="项  目：" :label-width="formLabelWidth">
-          <a>2018年项目进度</a>
+          <a>{{$route.params.planName}}</a>
         </el-form-item>
         <el-form-item label="角色：" :label-width="formLabelWidth">
-          <a>省用户</a>
+          <a>{{tab_user}}</a>
         </el-form-item>
-        <el-form-item label="省份：" :label-width="formLabelWidth">
+        <el-form-item label="省份：" :label-width="formLabelWidth" v-show="areas_show">
         <el-select v-model="value" placeholder="请选择">
          <el-option
          v-for="area in areas"
@@ -127,9 +127,12 @@ export default {
     return {
       value:"",
       value6: "",
-      checked: "",
+      checked:false,
       roles:[],
       areas:[],
+      areas_show:false,
+      tab_user:"",
+      role_id:"",
       addVisible: false,
       dialogTableVisible: false,
       setVisible:false,
@@ -168,11 +171,18 @@ export default {
     this.provinces();
   },
   methods: {
+    addroles_show:function(){
+      this.dialogFormVisible = true
+      this.form.name=""
+      this.value6=""
+      this.checked=false
+    },
     addroles:function(){//添加角色
     this.dialogFormVisible = false
      console.log(this.form.name)
      console.log(this.value6[0])
      console.log(this.$route.params.planId)
+     console.log(this.checked)
       this.$ajax.post("/api/admin/roles",{"name":this.form.name, "plan_id":this.$route.params.planId,"province":this.checked,
       "begin_at":this.value6[0],"end_at":this.value6[1],})
            .then((res) => {
@@ -216,12 +226,23 @@ export default {
      console.log(this.form1.phone)
      console.log(this.form1.name)
      console.log(this.value)
-        //  this.$ajax.post("/api/admin/users",{"name":'',"mobile":'',"plan_id":'',"province":'',})
-        //    .then((res) => {
-        //           this.addVisible = true
-        //           this.areas=res.data
-        //             console.log(this.areas)
-        //         },(err)=>{})
+         this.$ajax.post("/api/admin/users",{"name":this.form1.name,"mobile":this.form1.phone,"plan_id":this.$route.params.planId,"province":this.value,"role_id":this.role_id,})
+           .then((res) => {
+                  this.addVisible = false
+                  this.areas=res.data
+                  this.roleslist()
+                },(err)=>{})
+     },
+     addusers_show:function(e){//添加用户显示
+     this.addVisible = true
+     this.tab_user=this.roles[e].name
+     this.role_id=this.roles[e].id
+     this.areas_show=this.roles[e].province
+     this.form1.phone=""
+     this.form1.name=""
+     this.value=""
+     console.log(e)
+
      }
      
   }
