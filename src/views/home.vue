@@ -33,6 +33,9 @@
         },
         methods:{
             getProvince(){//获取省份
+                if(window.localStorage.getItem("provinces")){
+                    return
+                }
                 this.$ajax.get("/api/provinces").then((res)=>{
                     window.localStorage.setItem("provinces",JSON.stringify(res.data))
                 },(err)=>{

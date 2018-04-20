@@ -19,7 +19,7 @@
             </el-table-column>
             <el-table-column prop="provinceWz" label="省份筛选">
             </el-table-column>
-            <el-table-column prop="role_id" label="角色筛选">
+            <el-table-column prop="role" label="角色筛选">
             </el-table-column>
             <el-table-column label="操作">
             </el-table-column>
@@ -29,34 +29,34 @@
             </el-pagination>
         </div>
         <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
-            <el-form :model="form">
+            <el-form :model="user">
                 <el-form-item label="项目" :label-width="formLabelWidth">
-                    <el-select v-model="valuePlans" placeholder="请选择" @change="selectPlans(valuePlans)">
-                        <el-option v-for="item in planLists" :key="item.name" :label="item.name" :value="item.name">
+                    <el-select v-model="valuePlans" placeholder="请选择" @change="selectPlans($event)" value-key="id">
+                        <el-option v-for="item in planLists" :key="item.name" :label="item.name" :value="item">
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="角色" :label-width="formLabelWidth">
-                    <el-select v-model="valueRoles" placeholder="请选择">
-                        <el-option v-for="item in rolesList" :key="item.name" :label="item.name" :value="item.name">
+                    <el-select v-model="valueRoles" placeholder="请选择" @change="selectRoles($event)" value-key="id">
+                        <el-option v-for="item in rolesList" :key="item.name" :label="item.name" :value="item">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <!-- <el-form-item label="省份" :label-width="formLabelWidth">
-                    <el-select v-model="value" placeholder="请选择">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                <el-form-item label="省份" :label-width="formLabelWidth">
+                    <el-select v-model="valueProvince" placeholder="请选择" :disabled="disabled" value-key="code">
+                        <el-option v-for="item in province" :key="item.name" :label="item.name" :value="item">
                         </el-option>
                     </el-select>
-                </el-form-item>  -->
+                </el-form-item>
                 <el-form-item label="姓名" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                    <el-input v-model="user.name" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号码" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                    <el-input v-model="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary">确 定</el-button>
+                <el-button type="primary" @click="addUser">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -74,21 +74,24 @@
                 userList: [],
                 planLists: [],
                 rolesList: [],
-                province:[],
-                valuePlans:'',
-                valueRoles:''
+                province: JSON.parse(window.localStorage.getItem("provinces")),
+                valuePlans: {},
+                valueRoles: {},
+                valueProvince:{},
+                disabled:true,
+                user:{}
             }
         },
         methods: {
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
-                    let provinces = JSON.parse(window.localStorage.getItem("provinces"))
                     let data = res.data.data
-                    let roles = ['省用户','网评专家','实地专家','督导']
-                    data.forEach(function(item,index,arr){
-                        for(var i = 0;i<provinces.length;i++){
-                            if(item.province == provinces[i].code){
-                                item.provinceWz = provinces[i].name
+                    let roles = ['省用户', '网评专家', '实地专家', '督导']
+                    data.forEach((item, index, arr) => {
+                        item.role = roles[item.role_id - 1]
+                        for (var i = 0; i < this.province.length; i++) {
+                            if (item.province == this.province[i].code) {
+                                item.provinceWz = this.province[i].name
                             }
                         }
                     })
@@ -97,7 +100,7 @@
             },
             getYearPlans() { //获取年度计划列表
                 this.$ajax.get("/api/admin/plans").then((res) => {
-                    this.planLists = res.data.data.filter((item)=>{
+                    this.planLists = res.data.data.filter((item) => {
                         return item.state == 'active'
                     })
                 }, (err) => {
@@ -107,11 +110,29 @@
             getRolesList(id) { //获取角色列表
                 this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
                     this.rolesList = res.data.data
+                    this.valueRoles = this.rolesList[0]
+                    this.valueProvince = this.rolesList[0].province ? this.province[0]:{}
+                    this.disabled = !this.rolesList[0].province
                 }, (err) => {})
             },
-            selectPlans(value){//选择年度计划列表
-                // console.log(this.)
-                // this.getRolesList(id)
+            selectPlans(value) { //选择年度计划列表
+                this.getRolesList(value.id)
+            },
+            selectRoles(value){
+                this.valueProvince = value.province ? this.province[0]:{}
+                this.disabled = !value.province
+            },
+            addUser(){//添加用户
+                var param = {
+                    "name":this.user.name,
+                    "mobile":this.user.tel,
+                    "plan_id":this.valuePlans.id,
+                    "role_id":this.valueRoles.id,
+                    "province":this.valueProvince.code
+                }
+                this.$ajax.post("/api/admin/users",param).then((res)=>{
+                    console.log(res)
+                },(err)=>{})
             }
         },
         mounted() {
