@@ -90,7 +90,7 @@
         </el-form-item>
         </div>
          <el-form-item label="时间" :label-width="formLabelWidth" label-padding="0px 20px 0px 0px">
-        <el-date-picker v-model="value6" type="daterange"  range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" style="width:80%;">
+        <el-date-picker v-model="value6" type="daterange"  range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" style="width:80%;">
        </el-date-picker> 
        </el-form-item> 
       </el-form>
@@ -190,22 +190,27 @@ export default {
       formLabelWidth: "60px"
     };
   },
+  mounted () {
+    this.roleslist()
+  },
   methods: {
     addroles:function(){//添加角色
     this.dialogFormVisible = false
      console.log(this.form.name)
-     console.log(this.value6)
-     console.log(this.checked)
-      // this.$ajax.post("/api/admin/plans",{"name":this.form.name, "plan_id":'',"province":'',"plan_id":'',
-      // "begin_at":'',"end_at":'',})
-      //      .then((res) => {
-      //               console.log(res)
-      //               if(res.data.success){
-      //                 this.dialogFormVisible=false;
-      //                 this.getYearPlansList();
-      //               }
-      //           },(err)=>{})
-    }
+     console.log(this.value6[0])
+     console.log(this.$route.params.planId)
+      this.$ajax.post("/api/admin/plans",{"name":this.form.name, "plan_id":this.$route.params.planId,"province":this.checked,
+      "begin_at":this.value6[0],"end_at":this.value6[1],})
+           .then((res) => {
+                    console.log(res)
+                },(err)=>{})
+     },
+     roleslist:function(){
+      this.$ajax.get("/api/admin/roles",{})
+           .then((res) => {
+                    console.log(res)
+                },(err)=>{})
+     },
     
   }
 };
