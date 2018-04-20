@@ -39,7 +39,7 @@ export default new Router({
                     component: IndexMain
                 },
                 {
-                    path: '/home/detail',
+                    path: '/home/detail/:planId/:planName',
                     name: 'IndexMainDetail',
                     component: IndexMainDetail
                 },
