@@ -20,7 +20,7 @@
               </p>
             </div>
             <p class="plan-button m15">
-              <span class="add-btn" @click="provinces()">
+              <span class="add-btn" @click="addVisible = true">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
               </span>
@@ -33,7 +33,7 @@
       <p class="title">实地专家组</p>
       <ul class="on-plan-list finished-plan-list">
         <li class="on-li" v-for="(expert,index) in expertList" :key="index">
-           <p class="plan-name m15">{{expert.province}}</p>
+           <p class="plan-name m15">{{expert.name}}</p>
             <p class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
@@ -163,6 +163,7 @@ export default {
   mounted () {
     this.roleslist()
     this.getExpertList()
+    this.provinces();
   },
   methods: {
     addroles:function(){//添加角色
@@ -186,8 +187,17 @@ export default {
      getExpertList:function(){
          this.$ajax.get("/api/admin/teams?plan_id="+this.$route.params.planId).then((res) => {
             console.log(res)
-            this.expertList = res.data;
+            var allExpert =res.data;
+            // this.expertList = res.data;
             console.log(this.areas)
+            for (var i = 0; i < allExpert.length; i++) {
+                for (var j = 0; j < this.areas.length; j++) {
+                    if(allExpert[i].province == this.areas[j].code){
+                        allExpert[i].name=this.areas[j].name;
+                    }
+                }
+            }
+            this.expertList = allExpert
         }, (err) => {})
 
      },
@@ -195,7 +205,6 @@ export default {
      provinces:function(){
        this.$ajax.get("/api/provinces",{})
            .then((res) => {
-                  this.addVisible = true
                   this.areas=res.data
                     console.log(this.areas)
                 },(err)=>{})
