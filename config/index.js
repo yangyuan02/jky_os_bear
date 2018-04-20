@@ -6,7 +6,6 @@ const path = require('path')
 
 module.exports = {
   dev: {
-
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
@@ -16,15 +15,7 @@ module.exports = {
             target: 'http://jky_api:3000',  // 接口域名
             // target: 'http://192.168.1.117:3000',  // 内网
             changeOrigin: true,  //是否跨域
-  
-            pathRewrite: function (path, req) { 
-              
-              
-              return path.replace('/api/', '/') 
-            
-            
-            }
-
+            pathRewrite: function (path, req) { return path.replace('/api', '') }
         }
     },
 

@@ -3198,6 +3198,10 @@ jsprim@^1.2.2:
     json-schema "0.2.3"
     verror "1.10.0"
 
+jsrsasign@^8.0.11:
+  version "8.0.11"
+  resolved "http://registry.npm.taobao.org/jsrsasign/download/jsrsasign-8.0.11.tgz#8e824651e0e15ffcc7ab7ad1e490674398d51d6d"
+
 killable@^1.0.0:
   version "1.0.0"
   resolved "http://registry.npm.taobao.org/killable/download/killable-1.0.0.tgz#da8b84bd47de5395878f95d64d02f2449fe05e6b"
