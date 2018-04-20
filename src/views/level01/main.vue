@@ -6,8 +6,8 @@
                 <li @click="dialogFormVisible = true">
                     <i class="el-icon-plus"></i>
                 </li>
-                <li class="on-li">
-                    <p class="plan-name">设计工作</p>
+                <li class="on-li"  v-for="onPlain in onPlainList" :data-id="onPlain.id">
+                    <p class="plan-name">{{onPlain.name}}</p>
                     <p class="roles">
                         <span class="roles-left">角色</span>
                         <span class="roles-right">10个</span>
@@ -30,8 +30,8 @@
         <div class="content finished-plan">
             <p class="title">已归档的计划</p>
             <ul class="on-plan-list finished-plan-list">
-                <li class="on-li">
-                    <p class="plan-name">设计工作</p>
+                <li class="on-li"  v-for="filePlain in filePlainList" :data-id="filePlain.id">
+                    <p class="plan-name">{{filePlain.name}}</p>
                     <p class="roles">
                         <span class="roles-left">角色</span>
                         <span class="roles-right">10个</span>
@@ -52,7 +52,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <!-- <el-button @click="dialogFormVisible = false">取 消</el-button> -->
-                <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+                <el-button type="primary" @click="addYearPlans">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -74,18 +74,39 @@
                     resource: '',
                     desc: ''
                 },
-                formLabelWidth: '60px'
+                formLabelWidth: '60px',
+                planLists:[],
+                onPlainList:[],
+                filePlainList:[]
+
             };
         },
         methods: {
             getYearPlansList() { //获取年计划列表
                 this.$ajax.get("/api/admin/plans").then((res) => {
                     console.log(res)
+                    if(res.status==200){
+                      // 全部计划
+                      this.planLists = res.data.data;
+                      // 筛选出正在进行的计划
+                      this.onPlainList = this.planLists.filter(function (data) {
+                          return data.state == 'active'
+                      });
+                      // 筛选已经归档的计划
+                      this.filePlainList = this.planLists.filter(function (data) {
+                          return data.state == 'archived'
+                      });
+                    }
+
                 }, (err) => {})
             },
             addYearPlans(){//添加计划
-                this.$ajax.post("/api/admin/plans").then((res) => {
+                this.$ajax.post("/api/admin/plans",{"name":this.form.name, "state":'active'}).then((res) => {
                     console.log(res)
+                    if(res.data.success){
+                      this.dialogFormVisible=false;
+                      this.getYearPlansList();
+                    }
                 },(err)=>{})
             }
         },
