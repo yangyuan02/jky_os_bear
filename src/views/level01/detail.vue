@@ -12,7 +12,7 @@
             <p class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
-                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(0,10).replace(/-/ig,'.')}}</span>
+                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(5,10).replace(/-/ig,'.')}}</span>
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
@@ -20,13 +20,12 @@
               </p>
             </p>
             <p class="plan-button m15">         
-              <span class="add-btn" @click="provinces()">
+              <span class="add-btn" @click="addVisible = true">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
               </span>
             </p>
-        </li>
-        
+        </li>       
       </ul>
     </div>
     <div class="content finished-plan">
@@ -122,11 +121,11 @@
            <el-input v-model="form1.name" auto-complete="off" placeholder="请输入内容" style="width:50%;margin-left:10px"></el-input>
        </el-form-item>
       <el-form-item label="手机号:" :label-width="formLabelWidth">
-          <el-input v-model="form.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
+          <el-input v-model="form1.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
       </el-form-item>    
       </el-form>
       <div slot="footer" class="dialog-footer"> 
-        <el-button type="primary" @click="addVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addusers">确 定</el-button>
       </div>
     </el-dialog> 
     <!-- 组长设置      -->
@@ -176,6 +175,7 @@ export default {
         type: [],
         resource: "",
         desc: "",
+        phone:"",
       },
       checkedname:[],
       names:['路师生', '王良铮', '刘以可', '赵雯', '赵学线'],
@@ -183,6 +183,7 @@ export default {
     };
   },
   mounted () {
+    this.provinces()
     this.roleslist()
   },
   methods: {
@@ -204,14 +205,25 @@ export default {
                     console.log(res)
                 },(err)=>{})
      },
-     provinces:function(){
+     provinces:function(){//获取省份
        this.$ajax.get("/api/provinces",{})
            .then((res) => {
-                  this.addVisible = true
                   this.areas=res.data
                     console.log(this.areas)
                 },(err)=>{})
      },
+     addusers:function(){//添加用户
+     this.addVisible = false
+     console.log(this.form1.phone)
+     console.log(this.form1.name)
+     console.log(this.value)
+        //  this.$ajax.post("/api/admin/users",{"name":'',"mobile":'',"plan_id":'',"province":'',})
+        //    .then((res) => {
+        //           this.addVisible = true
+        //           this.areas=res.data
+        //             console.log(this.areas)
+        //         },(err)=>{})
+     }
      
   }
 };
@@ -266,9 +278,8 @@ export default {
         }
         .roles {
           color: @text-color;
-          min-height: 35px;
           .roles-left {
-            padding-right:0px;
+            padding-right:30px;
           }
         }
         .plan-button {
