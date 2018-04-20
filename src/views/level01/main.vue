@@ -13,7 +13,7 @@
                         <span class="roles-right">10个</span>
                     </p>
                     <p class="plan-button">
-                        <router-link to="/home/detail" class="three">
+                        <router-link :to="{name:'IndexMainDetail',params:{planId:onPlain.id,planName:onPlain.name}}" class="three">
                             <span class="manage-btn">
                           <i class="el-icon-search"></i>
                           管理
@@ -44,7 +44,7 @@
         </div>
         <!-- Form -->
         <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
-        <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
+        <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%" @close='closeDialog'>
             <el-form :model="form">
                 <el-form-item label="名称" :label-width="formLabelWidth">
                     <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
@@ -62,17 +62,10 @@
     export default {
         data() {
             return {
-                dialogTableVisible: false,
                 dialogFormVisible: false,
                 form: {
                     name: '',
-                    region: '',
-                    date1: '',
-                    date2: '',
-                    delivery: false,
                     type: [],
-                    resource: '',
-                    desc: ''
                 },
                 formLabelWidth: '60px',
                 planLists:[],
@@ -82,6 +75,9 @@
             };
         },
         methods: {
+            closeDialog(){
+              this.form.name='';
+            },
             getYearPlansList() { //获取年计划列表
                 this.$ajax.get("/api/admin/plans").then((res) => {
                     console.log(res)

@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <h3 class="detail-title">设计工作详情</h3>
+    <h3 class="detail-title">{{$route.params.planName}}详情{{$route.params.planId}}</h3>
     <div class="content on-plan">
       <p class="title">角色</p>
       <ul class="on-plan-list">
@@ -138,7 +138,6 @@
     <a class="check_a" v-for="name in names"><el-checkbox  :label="name" :key="name">{{name}}</el-checkbox></a>
   </el-checkbox-group>
       <div slot="footer" class="dialog-footer">
-        
         <el-button type="primary" @click="setVisible = false">确 定</el-button>
       </div>
     </el-dialog>
