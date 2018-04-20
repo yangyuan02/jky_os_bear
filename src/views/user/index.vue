@@ -17,7 +17,7 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column prop="province" label="省份筛选">
+            <el-table-column prop="provinceWz" label="省份筛选">
             </el-table-column>
             <el-table-column prop="role_id" label="角色筛选">
             </el-table-column>
@@ -31,23 +31,23 @@
         <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
             <el-form :model="form">
                 <el-form-item label="项目" :label-width="formLabelWidth">
-                    <el-select v-model="value" placeholder="请选择">
+                    <el-select v-model="valuePlans" placeholder="请选择" @change="selectPlans(valuePlans)">
                         <el-option v-for="item in planLists" :key="item.name" :label="item.name" :value="item.name">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <!-- <el-form-item label="角色" :label-width="formLabelWidth">
-                    <el-select v-model="value" placeholder="请选择">
-                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                <el-form-item label="角色" :label-width="formLabelWidth">
+                    <el-select v-model="valueRoles" placeholder="请选择">
+                        <el-option v-for="item in rolesList" :key="item.name" :label="item.name" :value="item.name">
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="省份" :label-width="formLabelWidth">
+                <!-- <el-form-item label="省份" :label-width="formLabelWidth">
                     <el-select v-model="value" placeholder="请选择">
                         <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                         </el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>  -->
                 <el-form-item label="姓名" :label-width="formLabelWidth">
                     <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
@@ -73,13 +73,26 @@
                 formLabelWidth: '100px',
                 userList: [],
                 planLists: [],
-                value:''
+                rolesList: [],
+                province:[],
+                valuePlans:'',
+                valueRoles:''
             }
         },
         methods: {
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
-                    this.userList = res.data.data
+                    let provinces = JSON.parse(window.localStorage.getItem("provinces"))
+                    let data = res.data.data
+                    let roles = ['省用户','网评专家','实地专家','督导']
+                    data.forEach(function(item,index,arr){
+                        for(var i = 0;i<provinces.length;i++){
+                            if(item.province == provinces[i].code){
+                                item.provinceWz = provinces[i].name
+                            }
+                        }
+                    })
+                    this.userList = data
                 }, (err) => {})
             },
             getYearPlans() { //获取年度计划列表
@@ -93,14 +106,17 @@
             },
             getRolesList(id) { //获取角色列表
                 this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
-                    console.log(res)
+                    this.rolesList = res.data.data
                 }, (err) => {})
+            },
+            selectPlans(value){//选择年度计划列表
+                // console.log(this.)
+                // this.getRolesList(id)
             }
         },
         mounted() {
             this.getUserList()
             this.getYearPlans()
-            // this.getRolesList(2)
         }
     }
 </script>
