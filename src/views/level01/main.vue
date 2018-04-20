@@ -6,18 +6,18 @@
                 <li @click="dialogFormVisible = true">
                     <i class="el-icon-plus"></i>
                 </li>
-                <li class="on-li"  v-for="onPlain in onPlainList" :data-id="onPlain.id">
+                <li class="on-li"  v-for="onPlain in onPlainList">
                     <p class="plan-name">{{onPlain.name}}</p>
                     <p class="roles">
                         <span class="roles-left">角色</span>
-                        <span class="roles-right">10个</span>
+                        <span class="roles-right">{{onPlain.role}}个</span>
                     </p>
                     <p class="plan-button">
                         <router-link :to="{name:'IndexMainDetail',params:{planId:onPlain.id,planName:onPlain.name}}" class="three">
-                            <span class="manage-btn">
-                          <i class="el-icon-search"></i>
-                          管理
-                        </span>
+                          <span class="manage-btn">
+                            <i class="el-icon-search"></i>
+                            管理
+                          </span>
                         </router-link>
                         <span class="file-btn">
                         <i class="el-icon-message"></i>
@@ -34,10 +34,10 @@
                     <p class="plan-name">{{filePlain.name}}</p>
                     <p class="roles">
                         <span class="roles-left">角色</span>
-                        <span class="roles-right">10个</span>
+                        <span class="roles-right">{{filePlain.role}}个</span>
                     </p>
                     <p class="plan-time">
-                        <span> 归档时间：</span> <span>2018.5.16</span>
+                        <span> 归档时间：</span> <span>{{filePlain.completed_at.slice(0,10).replace(/-/ig,'.')}}</span>
                     </p>
                 </li>
             </ul>
@@ -83,7 +83,7 @@
                     console.log(res)
                     if(res.status==200){
                       // 全部计划
-                      this.planLists = res.data.data;
+                      this.planLists = res.data.data.plans;
                       // 筛选出正在进行的计划
                       this.onPlainList = this.planLists.filter(function (data) {
                           return data.state == 'active'
