@@ -1,6 +1,6 @@
 <template>
   <div class="wrapper">
-    <h3 class="detail-title">{{$route.params.planName}}详情{{$route.params.planId}}</h3>
+    <h3 class="detail-title">{{$route.params.planName}}详情</h3>
     <div class="content on-plan">
       <p class="title">角色</p>
       <ul class="on-plan-list">
@@ -9,16 +9,16 @@
         </li>
         <li class="on-li" v-for="(role,index) in roles">
             <p class="plan-name m15">{{role.name}}</p>
-            <p class=" m15">
+            <div class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
-                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(0,10).replace(/-/ig,'.')}}</span>
+                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(6,10).replace(/-/ig,'.')}}</span>
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
                 <span class="roles-right">10</span>
               </p>
-            </p>
+            </div>
             <p class="plan-button m15">
               <span class="add-btn" @click="provinces()">
                 <i class="el-icon-circle-plus-outline"></i>
@@ -32,43 +32,20 @@
     <div class="content finished-plan">
       <p class="title">实地专家组</p>
       <ul class="on-plan-list finished-plan-list">
-        <li class="on-li">
-           <p class="plan-name m15">北京市</p>
+        <li class="on-li" v-for="(expert,index) in expertList" :key="index">
+           <p class="plan-name m15">{{expert.province}}</p>
             <p class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
-                <span class="roles-right">2018.6.1-6.30</span>
+                <span class="roles-right">{{expert.created_at.slice(0,10).replace(/-/ig,'.')}}-{{expert.updated_at.slice(6,10).replace(/-/ig,'.')}}</span>
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
-                <span class="roles-right">10</span>
-              </p>
-            </p>
-            <p class="roles">
-                <!-- <span class="roles-left">组长：</span>
-                <span class="roles-right">任丽丽</span> -->
-              </p>
-            <p class="plan-button m15">
-              <span class="add-btn" @click="setVisible = true">
-                <i class="el-icon-setting"></i>
-                组长设置
-              </span>
-            </p>
-        </li>
-        <li class="on-li">
-           <p class="plan-name m15">上海市</p>
-            <p class=" m15">
-              <p class="roles">
-                <span class="roles-left">工作时段：</span>
-                <span class="roles-right">2018.6.1-6.30</span>
-              </p>
-              <p class="roles">
-                <span class="roles-left">成员人数：</span>
-                <span class="roles-right">10</span>
+                <span class="roles-right">0</span>
               </p>
               <p class="roles">
                 <span class="roles-left">组长：</span>
-                <span class="roles-right">任丽丽</span>
+                <span class="roles-right">无</span>
               </p>
             </p>
             <p class="plan-button m15">
@@ -122,11 +99,11 @@
            <el-input v-model="form1.name" auto-complete="off" placeholder="请输入内容" style="width:50%;margin-left:10px"></el-input>
        </el-form-item>
       <el-form-item label="手机号:" :label-width="formLabelWidth">
-          <el-input v-model="form.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
-      </el-form-item>
+          <el-input v-model="form1.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
+      </el-form-item>    
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="addVisible = false">确 定</el-button>
+      <div slot="footer" class="dialog-footer"> 
+        <el-button type="primary" @click="addusers">确 定</el-button>
       </div>
     </el-dialog>
     <!-- 组长设置      -->
@@ -176,14 +153,18 @@ export default {
         type: [],
         resource: "",
         desc: "",
+        phone:"",
       },
       checkedname:[],
       names:['路师生', '王良铮', '刘以可', '赵雯', '赵学线'],
-      formLabelWidth: "60px"
+      formLabelWidth: "60px",
+      expertList:[],
     };
   },
   mounted () {
+    this.provinces()
     this.roleslist()
+    this.getExpertList()
   },
   methods: {
     addroles:function(){//添加角色
@@ -204,15 +185,35 @@ export default {
                     console.log(res)
                 },(err)=>{})
      },
+     getExpertList:function(){
+         this.$ajax.get("/api/admin/teams?plan_id="+this.$route.params.planId).then((res) => {
+            console.log(res)
+            this.expertList = res.data;
+            console.log(this.areas)
+        }, (err) => {})
+
+     },
+
      provinces:function(){
        this.$ajax.get("/api/provinces",{})
            .then((res) => {
-                  this.addVisible = true
                   this.areas=res.data
                     console.log(this.areas)
                 },(err)=>{})
      },
-
+     addusers:function(){//添加用户
+     this.addVisible = false
+     console.log(this.form1.phone)
+     console.log(this.form1.name)
+     console.log(this.value)
+        //  this.$ajax.post("/api/admin/users",{"name":'',"mobile":'',"plan_id":'',"province":'',})
+        //    .then((res) => {
+        //           this.addVisible = true
+        //           this.areas=res.data
+        //             console.log(this.areas)
+        //         },(err)=>{})
+     }
+     
   }
 };
 </script>
@@ -266,9 +267,8 @@ export default {
         }
         .roles {
           color: @text-color;
-          min-height: 35px;
           .roles-left {
-            padding-right:0px;
+            padding-right:30px;
           }
         }
         .plan-button {
