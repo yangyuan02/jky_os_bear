@@ -19,13 +19,14 @@
                 <span class="roles-right">10</span>
               </p>
             </p>
-            <p class="plan-button m15">         
-              <span class="add-btn" @click="addVisible = true">
+            <p class="plan-button m15">
+              <span class="add-btn" @click="provinces()">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
               </span>
             </p>
-        </li>       
+        </li>
+
       </ul>
     </div>
     <div class="content finished-plan">
@@ -47,7 +48,7 @@
                 <!-- <span class="roles-left">组长：</span>
                 <span class="roles-right">任丽丽</span> -->
               </p>
-            <p class="plan-button m15">         
+            <p class="plan-button m15">
               <span class="add-btn" @click="setVisible = true">
                 <i class="el-icon-setting"></i>
                 组长设置
@@ -70,7 +71,7 @@
                 <span class="roles-right">任丽丽</span>
               </p>
             </p>
-            <p class="plan-button m15">         
+            <p class="plan-button m15">
               <span class="add-btn" @click="setVisible = true">
                 <i class="el-icon-setting"></i>
                 组长设置
@@ -90,11 +91,11 @@
         </div>
          <el-form-item label="时间" :label-width="formLabelWidth" label-padding="0px 20px 0px 0px">
         <el-date-picker v-model="value6" type="daterange"  range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" style="width:80%;">
-       </el-date-picker> 
-       </el-form-item> 
+       </el-date-picker>
+       </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer"> 
-          <el-checkbox v-model="checked" style="width:50%;float:left;text-align: left;margin-left: 5%;">是否与省份关联</el-checkbox>  
+      <div slot="footer" class="dialog-footer">
+          <el-checkbox v-model="checked" style="width:50%;float:left;text-align: left;margin-left: 5%;">是否与省份关联</el-checkbox>
         <el-button type="primary" @click="addroles">确 定</el-button>
       </div>
     </el-dialog>
@@ -107,7 +108,7 @@
         <el-form-item label="角色：" :label-width="formLabelWidth">
           <a>省用户</a>
         </el-form-item>
-        <el-form-item label="省份：" :label-width="formLabelWidth">  
+        <el-form-item label="省份：" :label-width="formLabelWidth">
         <el-select v-model="value" placeholder="请选择">
          <el-option
          v-for="area in areas"
@@ -116,7 +117,7 @@
           :value="area.code">
           </el-option>
         </el-select>
-        </el-form-item> 
+        </el-form-item>
        <el-form-item label="姓名:" label-width="50px">
            <el-input v-model="form1.name" auto-complete="off" placeholder="请输入内容" style="width:50%;margin-left:10px"></el-input>
        </el-form-item>
@@ -127,10 +128,10 @@
       <div slot="footer" class="dialog-footer"> 
         <el-button type="primary" @click="addusers">确 定</el-button>
       </div>
-    </el-dialog> 
+    </el-dialog>
     <!-- 组长设置      -->
     <el-dialog title="组长设置" :visible.sync="setVisible" width="25%">
-        <el-checkbox-group 
+        <el-checkbox-group
     v-model="checkedname"
     :min="0"
     :max="1">
@@ -306,7 +307,7 @@ export default {
   .check_a{
     display:inline-block;
     min-width: 106px;
-  }  
+  }
 }
 </style>
 
