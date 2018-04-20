@@ -19,7 +19,7 @@
                             管理
                           </span>
                         </router-link>
-                        <span class="file-btn">
+                        <span class="file-btn" @click="fileOnPlan">
                         <i class="el-icon-message"></i>
                         归档
                       </span>
@@ -75,7 +75,7 @@
             };
         },
         methods: {
-            closeDialog(){
+            closeDialog(){//关闭按钮清空数据
               this.form.name='';
             },
             getYearPlansList() { //获取年计划列表
@@ -102,6 +102,13 @@
                     if(res.data.success){
                       this.dialogFormVisible=false;
                       this.getYearPlansList();
+                    }
+                },(err)=>{})
+            },
+            fileOnPlan(){// 归档计划
+                this.$ajax.post("/api/admin/plans",{"name":this.form.name, "state":'active'}).then((res) => {
+                    console.log(res)
+                    if(res.data.success){
                     }
                 },(err)=>{})
             }
