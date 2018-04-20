@@ -31,14 +31,23 @@
         <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
             <el-form :model="form">
                 <el-form-item label="项目" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                    <el-select v-model="value" placeholder="请选择">
+                        <el-option v-for="item in planLists" :key="item.name" :label="item.name" :value="item.name">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="角色" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                <!-- <el-form-item label="角色" :label-width="formLabelWidth">
+                    <el-select v-model="value" placeholder="请选择">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="省份" :label-width="formLabelWidth">
-                    <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
-                </el-form-item>
+                    <el-select v-model="value" placeholder="请选择">
+                        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+                        </el-option>
+                    </el-select>
+                </el-form-item> -->
                 <el-form-item label="姓名" :label-width="formLabelWidth">
                     <el-input v-model="form.name" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
@@ -62,7 +71,9 @@
                     name: ''
                 },
                 formLabelWidth: '100px',
-                userList:[]
+                userList: [],
+                planLists: [],
+                value:''
             }
         },
         methods: {
@@ -70,10 +81,26 @@
                 this.$ajax.get("/api/admin/users").then((res) => {
                     this.userList = res.data.data
                 }, (err) => {})
+            },
+            getYearPlans() { //获取年度计划列表
+                this.$ajax.get("/api/admin/plans").then((res) => {
+                    this.planLists = res.data.data.filter((item)=>{
+                        return item.state == 'active'
+                    })
+                }, (err) => {
+                    console.log()
+                })
+            },
+            getRolesList(id) { //获取角色列表
+                this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
+                    console.log(res)
+                }, (err) => {})
             }
         },
-        mounted(){
+        mounted() {
             this.getUserList()
+            this.getYearPlans()
+            // this.getRolesList(2)
         }
     }
 </script>
