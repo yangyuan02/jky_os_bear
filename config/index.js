@@ -10,7 +10,15 @@ module.exports = {
     // Paths
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+        '/api': {
+            // 测试环境
+            target: 'http://jky_api:3000',  // 接口域名
+            // target: 'http://192.168.1.117:3000',  // 内网
+            changeOrigin: true,  //是否跨域
+            pathRewrite: function (path, req) { return path.replace('/api', '') }
+        }
+    },
 
     // Various Dev Server settings
     host: '0.0.0.0', // can be overwritten by process.env.HOST
