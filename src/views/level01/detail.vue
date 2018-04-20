@@ -4,7 +4,7 @@
     <div class="content on-plan">
       <p class="title">角色</p>
       <ul class="on-plan-list">
-        <li @click="dialogFormVisible = true">
+        <li @click="addroles_show">
           <i class="el-icon-plus"></i>
         </li>
         <li class="on-li" v-for="(role,index) in roles">
@@ -171,6 +171,12 @@ export default {
     this.provinces();
   },
   methods: {
+    addroles_show:function(){
+      this.dialogFormVisible = true
+      this.form.name=""
+      this.value6=""
+      this.checked=false
+    },
     addroles:function(){//添加角色
     this.dialogFormVisible = false
      console.log(this.form.name)
@@ -232,6 +238,9 @@ export default {
      this.tab_user=this.roles[e].name
      this.role_id=this.roles[e].id
      this.areas_show=this.roles[e].province
+     this.form1.phone=""
+     this.form1.name=""
+     this.value=""
      console.log(e)
 
      }
