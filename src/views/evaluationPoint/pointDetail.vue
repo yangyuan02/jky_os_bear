@@ -94,7 +94,7 @@ export default {
         },
         closeDialog(){
             this.phone='';
-            // this.getNetworkExpert();
+            this.getNetworkExpert();
         },
         handleSelectionChange(val) {
             console.log(val)
