@@ -1,49 +1,49 @@
 <template>
     <div class="point-main">
-        <h3 class="point-main-top">测评点详情</h3>
+        <h3 class="point-main-top">测评点详情{{this.$route.params.pointId}}</h3>
         <div class="point-explain">
-            <p class="explain-title">测评点1.1.1</p>
-            <p class="explain-content">全面建成小康社会与全面建成社会主义现代化强国</p>
+            <p class="explain-title">测评点</p>
+            <p class="explain-content">{{content}}</p>
         </div>
         <p class="point-person">网评专家详情</p>
         <div class="point-person-content">
             <ul>
-                <li  @click="dialogTableVisible = true"><i class="el-icon-plus"></i></li>
-                <li class="li-on">
-                    <p class="expert-name">专家1</p>
-                    <p class="phone">13800000001</p>
-                </li>
-                <li class="li-on">
-                    <p class="expert-name">专家1</p>
-                    <p class="phone">13800000001</p>
-                </li>
-                <li class="li-on">
-                    <p class="expert-name">专家1</p>
-                    <p class="phone">13800000001</p>
-                </li>
-                <li class="li-on">
-                    <p class="expert-name">专家1</p>
-                    <p class="phone">13800000001</p>
-                </li>
-                <li class="li-on">
-                    <p class="expert-name">专家1</p>
-                    <p class="phone">13800000001</p>
+                <li  @click="dialogFormVisible = true"><i class="el-icon-plus"></i></li>
+                <li class="li-on" v-for="expert in expertList">
+                    <p class="expert-name">{{expert.name}}</p>
+                    <p class="phone">{{expert.mobile}}</p>
                 </li>
             </ul>
         </div>
         <!-- 添加专家弹框 -->
         <!-- <el-button type="text" @click="dialogTableVisible = true">打开嵌套表格的 Dialog</el-button> -->
 
-        <el-dialog title="网评专家" :visible.sync="dialogTableVisible">
-        <el-table :data="gridData">
-            <el-table-column property="date" label="姓名" width="150"></el-table-column>
-            <el-table-column property="name" label="手机号" width="200"></el-table-column>
-            <el-table-column label="操作">
-                <template slot-scope="scope">
-                    <el-button type="text" size="small" @click=""><i class="el-icon-news" style="color:#f7b241"></i></el-button>
-                </template>
-            </el-table-column>
-        </el-table>
+        <el-dialog title="网评专家" :visible.sync="dialogFormVisible" @close="closeDialog" width="40%">
+
+           <div>
+               <el-input
+                placeholder="请输入手机号"
+                prefix-icon="el-icon-search"
+                v-model="phone"
+                @keyup.enter.native="getNetworkExpert"
+                style="width:80%">
+                </el-input>
+                <el-button type="primary" style="width:15%;margin-left:20px;" @click="getNetworkExpert">搜索</el-button>
+            </div>
+            <div style="margin-top:20px">
+                <el-table :data="gridData" style="width: 100%" height="350" @selection-change="handleSelectionChange">
+                    <el-table-column property="date" label="姓名" width="200"></el-table-column>
+                    <el-table-column property="name" label="手机号" width="200"></el-table-column>
+                    <el-table-column
+                        type="selection"
+                        width="100">
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible = false">取 消</el-button>
+                <el-button type="primary" @click="bindExpert" >确 定</el-button>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -51,33 +51,69 @@
 export default {
     data() {
       return {
-        gridData: [{
-          date: '专家1',
-          name: '13781209126',
-        }, {
-          date: '专家1',
-          name: '13781209126',
-        }, {
-          date: '专家1',
-          name: '13781209126',
-        }, {
-          date: '专家1',
-          name: '13781209126',
-        }],
-        dialogTableVisible: false,
+        content:'',
+        expertList:[],
+        gridData: [],
         dialogFormVisible: false,
-        form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
+        phone:'',
+        checkList:[],
+        multipleSelection: [],
         formLabelWidth: '120px'
       };
+    },
+    mounted(){
+        this.getPointDetail();
+        this.getNetworkExpert();
+        this.getCheckedExpert();
+    },
+    methods:{
+        getPointDetail(){
+            this.$ajax.post('/api/admin/assessments/find_one',{'id':this.$route.params.pointId}).then((res) => {
+                console.log(res,res.data)
+                this.content=res.data.data;
+            },(err)=>{})
+        },
+        getCheckedExpert(){
+             this.$ajax.post('/api/admin/assessments/find_all_expert_user',{'assessment_id':this.$route.params.pointId}).then((res) => {
+                console.log(res,res.data)
+                this.expertList=res.data.data;
+            },(err)=>{})
+        },
+        getNetworkExpert(){
+            this.$ajax.post('/api/admin/users/wangping_expert_user',{'keyword':this.phone}).then((res) => {
+                var data = []
+                for (var i = 0; i < res.data.data.length; i++) {
+                    var obj = {}
+                    obj.date = res.data.data[i].name
+                    obj.name = res.data.data[i].mobile
+                    obj.id = res.data.data[i].id
+                    data[i] = obj
+                }
+                this.gridData = data
+            },(err)=>{})
+        },
+        closeDialog(){
+            this.phone='';
+            // this.getNetworkExpert();
+        },
+        handleSelectionChange(val) {
+            console.log(val)
+            this.multipleSelection = val;
+        },
+        bindExpert(){
+            this.dialogFormVisible = false;
+            console.log(this.multipleSelection);
+            var checkedExperList = this.multipleSelection;
+            var checkedExpertIds=[];
+            for (var i = 0; i < checkedExperList.length; i++) {
+                checkedExpertIds.push(checkedExperList[i].id)
+            }
+            checkedExpertIds = checkedExpertIds.join(',');
+            this.$ajax.post('/api/admin/assessment_experts',{'assessment_id':this.$route.params.pointId,'expert_ids':checkedExpertIds}).then((res) => {
+                console.log(res)
+                this.getCheckedExpert();
+            },(err)=>{})
+        }
     }
  }
 </script>
@@ -136,7 +172,11 @@ export default {
               line-height: 18px;
               padding: 7px 0;
               .expert-name{
-                  color: @main-clolr;
+                color: @main-clolr;
+                width: 100px;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
               }
               .phone{
                   color: @text-color;

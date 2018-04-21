@@ -119,7 +119,6 @@ export default {
   },
   mounted () {
     this.roleslist()
-    console.log(this.areas)
   },
   methods: {
     addroles_show:function(){

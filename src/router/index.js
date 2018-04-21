@@ -58,7 +58,7 @@ export default new Router({
                     name: 'EvaluationPoint',
                     component: EvaluationPoint
                 },{
-                    path: '/home/pointDetail',
+                    path: '/home/pointDetail/:pointId',
                     name: 'pointDetail',
                     component: pointDetail
                 },

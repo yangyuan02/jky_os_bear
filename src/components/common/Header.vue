@@ -8,7 +8,7 @@
 export default {
     data(){
         return{
-            planName:window.localStorage.getItem("planName"),
+            planName:JSON.parse(window.localStorage.getItem("planName")),
         }
     }
 }

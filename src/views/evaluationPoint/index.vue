@@ -1,11 +1,12 @@
 <template>
     <div class="wrapper">
-        <h3 class="detail-title">评测点详情</h3>
+        <h3 class="detail-title">评测点列表</h3>
         <div class="table-list">
             <el-table
                 :data="tableData"
                 stripe
-                style="width: 100%">
+                style="width: 100%"
+                @row-click="getPointDetail">
                 <el-table-column
                 prop="date"
                 label="测评点"
@@ -28,7 +29,9 @@
             <el-pagination
             background
             layout="prev, pager, next"
-            :total="1">
+            :total="total"
+            @size-change="changePage"
+            @current-change="changePage">
             </el-pagination>
         </div>
     </div>
@@ -37,30 +40,39 @@
   export default {
     data() {
       return {
-        tableData: []
+        tableData: [],
+        total:1
       }
     },
     mounted(){
-        this.getPointList();
+        this.getPointList(1);
 
     },
     methods:{
-        getPointList(){
-               this.$ajax.get('/api/admin/assessments',{}).then((res) => {
+        getPointList(num){
+            console.log(num)
+               this.$ajax.get('/api/admin/assessments?page='+num,{}).then((res) => {
                     var data = []
-                    console.log(res)
-                    for (var i = 0; i < res.data.length; i++) {
+                    console.log(res,res.data,res.data.total)
+                    this.total =res.data.total;
+                    for (var i = 0; i < res.data.data.length; i++) {
                         var obj = {}
-                        obj.date = res.data[i].content
-                        obj.name = res.data[i].children_count
+                        obj.date = res.data.data[i].content
+                        obj.name = res.data.data[i].children_count
+                        obj.id = res.data.data[i].id
                         data[i] = obj
                     }
                     this.tableData = data
-                    console.log(this.tableData);
                 },(err)=>{})
         },
-        getPointDetail(){
-            this.$router.push('./pointDetail')
+        changePage(num){
+            console.log(222)
+            this.getPointList(num)
+
+        },
+        getPointDetail(row){
+            // this.$router.push('./pointDetail')
+            this.$router.push({ name: 'pointDetail', params: { pointId: row.id}})
         }
     }
   }

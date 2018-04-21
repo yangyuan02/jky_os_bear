@@ -47,7 +47,7 @@ export default {
   data() {
     return {
         province: JSON.parse(window.localStorage.getItem("provinces")),
-        planId:window.localStorage.getItem("plan"),
+        planId:JSON.parse(window.localStorage.getItem("plan")),
         setVisible:false,
         form1: {
             name: "",
@@ -63,11 +63,8 @@ export default {
   },
   methods: {
      getExpertList:function(){
-         console.log(window.localStorage.getItem("plan"))
          this.$ajax.get("/api/admin/teams?plan_id="+this.planId).then((res) => {
-            console.log(res)
             var allExpert =res.data;
-            console.log(this.province)
             for (var i = 0; i < allExpert.length; i++) {
                 for (var j = 0; j < this.province.length; j++) {
                     if(allExpert[i].province == this.province[j].code){
