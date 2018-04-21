@@ -15,18 +15,18 @@
         </li>
        </ul>
     </div>
- </div>   
+ </div>
 </template>
 <script>
  export default {
 
- }   
+ }
 </script>
 <style  scoped lang="less">
     .point_main{
         margin:20px 0px 0px 30px;
       .point_main_top{
-          font-size: 20px;
+          font-size: 16px;
       }
       .point_explain{
           width:517px;
@@ -37,18 +37,18 @@
           padding: 17px;
           margin-top: 34px;
          .explain_title{
-             font-size: 20px;
+             font-size: 16px;
              color: #409eff;
          }
          .explain_content{
             margin-top: 30px;
-            font-size: 16px;
+            font-size: 14px;
             color: #909399;
             font-weight: 200;
          }
       }
       .point_person{
-          font-size: 16px;
+          font-size: 14px;
           margin-top: 50px;
           font-weight: 200;
       }

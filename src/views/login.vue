@@ -59,6 +59,7 @@
                         var user = jsrsasign.KJUR.jws.JWS.parse(token).payloadObj
                         console.log(user)
                         window.localStorage.setItem("token", JSON.stringify(token))
+                        window.localStorage.setItem("plan", JSON.stringify(user.plan))//获取planId
                         this.$router.push('./home')
                     }
                 },(err)=>{})

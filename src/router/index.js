@@ -12,9 +12,12 @@ const IndexMain = r => require.ensure([], () => r(require('@/views/level01/main'
 const IndexMainDetail = r => require.ensure([], () => r(require('@/views/level01/detail')), 'IndexMainDetail')//设计工作详情
 
 const user = r => require.ensure([], () => r(require('@/views/user/index')), 'user')
-const manage = r => require.ensure([], () => r(require('@/views/manage/index')), 'manage')
+
+const EvaluationPoint = r => require.ensure([], () => r(require('@/views/evaluationPoint/index')), 'EvaluationPoint')//评测点
 
 const pointDetail = r => require.ensure([], () => r(require('@/views/pointDetail')), 'pointDetail')
+
+const ExpertGroup = r => require.ensure([], () => r(require('@/views/expertGroup/index')), 'ExpertGroup')//专家组
 
 Vue.use(Router)
 
@@ -51,14 +54,19 @@ export default new Router({
                     component: user
                 },
                 {
-                    path: '/home/manage',
-                    name: 'manage',
-                    component: manage
+                    path: '/home/evaluationPoint',
+                    name: 'EvaluationPoint',
+                    component: EvaluationPoint
                 },{
                     path: '/home/pointDetail',
                     name: 'pointDetail',
                     component: pointDetail
                 },
+                {
+                    path: '/home/expertGroup',
+                    name: 'ExpertGroup',
+                    component: ExpertGroup
+                }
             ]
         },
         {
