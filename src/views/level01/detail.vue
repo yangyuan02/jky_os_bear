@@ -1,8 +1,7 @@
 <template>
   <div class="wrapper">
-    <h3 class="detail-title">{{$route.params.planName}}详情</h3>
+    <h3 class="detail-title">角色详情</h3>
     <div class="content on-plan">
-      <p class="title">角色</p>
       <ul class="on-plan-list">
         <li @click="addroles_show">
           <i class="el-icon-plus"></i>
@@ -16,7 +15,7 @@
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
-                <span class="roles-right">{{role.users_count}}</span>
+                <span class="roles-right">{{role.users_count==null?0:role.users_count}}</span>
               </p>
             </div>
             <p class="plan-button m15">
@@ -51,9 +50,6 @@
     <!--添加 -->
     <el-dialog title="添加" :visible.sync="addVisible" width="30%">
        <el-form :model="form1">
-        <el-form-item label="项  目：" :label-width="formLabelWidth">
-          <a>{{$route.params.planName}}</a>
-        </el-form-item>
         <el-form-item label="角色：" :label-width="formLabelWidth">
           <a>{{tab_user}}</a>
         </el-form-item>
@@ -89,7 +85,7 @@ export default {
       value6: "",
       checked:false,
       roles:[],
-      areas:[],
+      areas:JSON.parse(window.localStorage.getItem("provinces")),
       areas_show:false,
       tab_user:"",
       role_id:"",
@@ -122,10 +118,8 @@ export default {
     };
   },
   mounted () {
-    this.provinces()
     this.roleslist()
-    this.getExpertList()
-    this.provinces();
+    console.log(this.areas)
   },
   methods: {
     addroles_show:function(){
@@ -140,53 +134,35 @@ export default {
      console.log(this.value6[0])
      console.log(this.$route.params.planId)
      console.log(this.checked)
-      this.$ajax.post("/api/admin/roles",{"name":this.form.name, "plan_id":this.$route.params.planId,"province":this.checked,
+      this.$ajax.post("/api/admin/roles",{"name":this.form.name,"province":this.checked,
       "begin_at":this.value6[0],"end_at":this.value6[1],})
            .then((res) => {
                     this.roleslist()
                 },(err)=>{})
      },
      roleslist:function(){//获取角色列表
-      this.$ajax.get('/api/admin/roles?plan_id='+this.$route.params.planId+'',{})
+      this.$ajax.get('/api/admin/roles',{})
            .then((res) => {
                     this.roles=res.data.data
                     console.log(res)
                 },(err)=>{})
      },
-     getExpertList:function(){
-         this.$ajax.get("/api/admin/teams?plan_id="+this.$route.params.planId).then((res) => {
-            console.log(res)
-            var allExpert =res.data;
-            // this.expertList = res.data;
-            console.log(this.areas)
-            for (var i = 0; i < allExpert.length; i++) {
-                for (var j = 0; j < this.areas.length; j++) {
-                    if(allExpert[i].province == this.areas[j].code){
-                        allExpert[i].name=this.areas[j].name;
-                    }
-                }
-            }
-            this.expertList = allExpert
-        }, (err) => {})
-
-     },
-
-     provinces:function(){
-       this.$ajax.get("/api/provinces",{})
-           .then((res) => {
-                  this.areas=res.data
-                    console.log(this.areas)
-                },(err)=>{})
-     },
+    //  provinces:function(){
+    //    this.$ajax.get("/api/provinces",{})
+    //        .then((res) => {
+    //               this.areas=res.data
+    //                 console.log(this.areas)
+    //             },(err)=>{})
+    //  },
      addusers:function(){//添加用户
+     console.log(this.areas)
      this.addVisible = false
      console.log(this.form1.phone)
      console.log(this.form1.name)
      console.log(this.value)
-         this.$ajax.post("/api/admin/users",{"name":this.form1.name,"mobile":this.form1.phone,"plan_id":this.$route.params.planId,"province":this.value,"role_id":this.role_id,})
+         this.$ajax.post("/api/admin/users",{"name":this.form1.name,"mobile":this.form1.phone,"province":this.value,"role_id":this.role_id,})
            .then((res) => {
                   this.addVisible = false
-                  this.areas=res.data
                   this.roleslist()
                 },(err)=>{})
      },

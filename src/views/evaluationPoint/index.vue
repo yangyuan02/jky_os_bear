@@ -1,5 +1,6 @@
 <template>
     <div class="wrapper">
+        <h3 class="detail-title">评测点详情</h3>
         <div class="table-list">
             <el-table
                 :data="tableData"
@@ -16,8 +17,10 @@
                 width="180">
                 </el-table-column>
                 <el-table-column
-                prop="address"
                 label="操作">
+                <template slot-scope="scope">
+                    <el-button type="text" size="small" @click="getPointDetail">详情</el-button>
+                </template>
                 </el-table-column>
             </el-table>
         </div>
@@ -50,17 +53,24 @@
                         var obj = {}
                         obj.date = res.data[i].content
                         obj.name = res.data[i].children_count
-                        obj.address = '详情'
                         data[i] = obj
                     }
                     this.tableData = data
                     console.log(this.tableData);
                 },(err)=>{})
+        },
+        getPointDetail(){
+            this.$router.push('./pointDetail')
         }
     }
   }
 </script>
-<style>
-
+<style scoped lang="less">
+    .wrapper{
+        .detail-title {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    }
 </style>
 

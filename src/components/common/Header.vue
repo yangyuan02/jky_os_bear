@@ -1,12 +1,16 @@
 <template>
   <Header>
-    省级政府履行教育职责测评系统
+    省级政府履行教育职责测评系统-{{this.planName}}
   </Header>
 </template>
 
 <script>
 export default {
-
+    data(){
+        return{
+            planName:window.localStorage.getItem("planName"),
+        }
+    }
 }
 </script>
 

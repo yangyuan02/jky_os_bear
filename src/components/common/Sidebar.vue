@@ -1,37 +1,37 @@
 <template>
   <div style="height:100%">
     <el-col :span="12" style="height:100%">
-      <el-menu default-active="1" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" text-color="#909399">
-        <router-link to="/home">
-            <el-menu-item index="1">
-                <i class="el-icon-menu"></i>
-                <span slot="title">项目管理</span>
-            </el-menu-item>
-        </router-link>
-        <router-link :to="{name:'IndexMainDetail',params:{planId:this.planId}}">
-            <el-menu-item index="2">
+      <el-menu :default-active="$route.path" router class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" text-color="#909399">
+
+        <!-- <el-menu-item index="/home">
+            <i class="el-icon-menu"></i>
+            <span slot="title">项目管理</span>
+        </el-menu-item> -->
+
+        <!-- <router-link :to="{name:'IndexMainDetail',params:{planId:this.planId}}"> -->
+            <el-menu-item index="/home/detail">
                 <i class="el-icon-location"></i>
                 <span slot="title">角色管理</span>
             </el-menu-item>
-        </router-link>
-        <router-link to="/home/expertGroup">
-            <el-menu-item index="3">
+        <!-- </router-link> -->
+
+            <el-menu-item index="/home/expertGroup">
                 <i class="el-icon-setting"></i>
                 <span slot="title">专家组</span>
             </el-menu-item>
-        </router-link>
-        <router-link to="/home/evaluationPoint">
-            <el-menu-item index="4">
+
+
+            <el-menu-item index="/home/evaluationPoint">
                 <i class="el-icon-setting"></i>
                 <span slot="title">测评点</span>
             </el-menu-item>
-        </router-link>
-        <router-link to="/home/user">
-            <el-menu-item index="5">
+
+
+            <el-menu-item index="/home/user">
                 <i class="el-icon-setting"></i>
                 <span slot="title">用户</span>
             </el-menu-item>
-        </router-link>
+
     </el-menu>
   </el-col>
   </div>

@@ -15,7 +15,7 @@ const user = r => require.ensure([], () => r(require('@/views/user/index')), 'us
 
 const EvaluationPoint = r => require.ensure([], () => r(require('@/views/evaluationPoint/index')), 'EvaluationPoint')//评测点
 
-const pointDetail = r => require.ensure([], () => r(require('@/views/pointDetail')), 'pointDetail')
+const pointDetail = r => require.ensure([], () => r(require('@/views/evaluationPoint/pointDetail')), 'pointDetail')
 
 const ExpertGroup = r => require.ensure([], () => r(require('@/views/expertGroup/index')), 'ExpertGroup')//专家组
 
@@ -44,7 +44,7 @@ export default new Router({
                     component: IndexMain
                 },
                 {
-                    path: '/home/detail/:planId',
+                    path: '/home/detail',
                     name: 'IndexMainDetail',
                     component: IndexMainDetail
                 },

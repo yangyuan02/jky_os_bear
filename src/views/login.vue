@@ -60,7 +60,8 @@
                         console.log(user)
                         window.localStorage.setItem("token", JSON.stringify(token))
                         window.localStorage.setItem("plan", JSON.stringify(user.plan))//获取planId
-                        this.$router.push('./home')
+                        window.localStorage.setItem("planName", JSON.stringify(user.plan_name))//获取plan_name
+                        this.$router.push('./home/detail')
                     }
                 },(err)=>{})
             }

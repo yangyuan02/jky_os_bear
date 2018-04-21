@@ -13,12 +13,12 @@
                         <span class="roles-right">{{onPlain.role}}个</span>
                     </p>
                     <p class="plan-button">
-                        <router-link :to="{name:'IndexMainDetail',params:{planId:onPlain.id,planName:onPlain.name}}" class="three">
+                        <!-- <router-link :to="{name:'IndexMainDetail',params:{planId:onPlain.id,planName:onPlain.name}}" class="three"> -->
                           <span class="manage-btn">
                             <i class="el-icon-search"></i>
                             管理
                           </span>
-                        </router-link>
+                        <!-- </router-link> -->
                         <span class="file-btn" @click="fileOnPlan">
                         <i class="el-icon-message"></i>
                         归档
