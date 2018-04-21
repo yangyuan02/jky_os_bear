@@ -29,34 +29,6 @@
 
       </ul>
     </div>
-    <div class="content finished-plan">
-      <p class="title">实地专家组</p>
-      <ul class="on-plan-list finished-plan-list">
-        <li class="on-li" v-for="(expert,index) in expertList" :key="index">
-           <p class="plan-name m15">{{expert.name}}</p>
-            <p class=" m15">
-              <p class="roles">
-                <span class="roles-left">工作时段：</span>
-                <span class="roles-right">{{expert.created_at.slice(0,10).replace(/-/ig,'.')}}-{{expert.updated_at.slice(6,10).replace(/-/ig,'.')}}</span>
-              </p>
-              <p class="roles">
-                <span class="roles-left">成员人数：</span>
-                <span class="roles-right">0</span>
-              </p>
-              <p class="roles">
-                <span class="roles-left">组长：</span>
-                <span class="roles-right">无</span>
-              </p>
-            </p>
-            <p class="plan-button m15">
-              <span class="add-btn" @click="setVisible = true">
-                <i class="el-icon-setting"></i>
-                组长设置
-              </span>
-            </p>
-        </li>
-      </ul>
-    </div>
     <!-- Form -->
 <!-- <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button> -->
     <el-dialog title="新增角色" :visible.sync="dialogFormVisible" width="30%">
@@ -100,22 +72,10 @@
        </el-form-item>
       <el-form-item label="手机号:" :label-width="formLabelWidth">
           <el-input v-model="form1.phone" auto-complete="off" placeholder="请输入内容" style="width:50%;"></el-input>
-      </el-form-item>    
+      </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer"> 
-        <el-button type="primary" @click="addusers">确 定</el-button>
-      </div>
-    </el-dialog>
-    <!-- 组长设置      -->
-    <el-dialog title="组长设置" :visible.sync="setVisible" width="25%">
-        <el-checkbox-group
-    v-model="checkedname"
-    :min="0"
-    :max="1">
-    <a class="check_a" v-for="name in names"><el-checkbox  :label="name" :key="name">{{name}}</el-checkbox></a>
-  </el-checkbox-group>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="setVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addusers">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -135,7 +95,6 @@ export default {
       role_id:"",
       addVisible: false,
       dialogTableVisible: false,
-      setVisible:false,
       dialogFormVisible: false,
       form: {
         name: "",
@@ -158,8 +117,6 @@ export default {
         desc: "",
         phone:"",
       },
-      checkedname:[],
-      names:['路师生', '王良铮', '刘以可', '赵雯', '赵学线'],
       formLabelWidth: "60px",
       expertList:[],
     };
@@ -244,7 +201,7 @@ export default {
      console.log(e)
 
      }
-     
+
   }
 };
 </script>

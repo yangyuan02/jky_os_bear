@@ -8,7 +8,7 @@
                 <span slot="title">项目管理</span>
             </el-menu-item>
         </router-link>
-        <router-link to="/home">
+        <router-link :to="{name:'IndexMainDetail',params:{planId:this.planId}}">
             <el-menu-item index="2">
                 <i class="el-icon-location"></i>
                 <span slot="title">角色管理</span>
@@ -51,7 +51,8 @@
   export default {
     data() {
       return {
-        isCollapse: true
+          planId:window.localStorage.getItem("plan"),
+          isCollapse: true
       };
     },
     methods: {
