@@ -17,25 +17,30 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter">
+            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter" :filter-multiple="false">
             </el-table-column>
-            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter">
+            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter" :filter-multiple="false">
             </el-table-column>
             <el-table-column label="操作">
+                <template slot-scope="scope">
+                    <el-button type="text" size="small">修改</el-button>
+                    <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
+                    <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
+</template>
             </el-table-column>
         </el-table>
         <div class="pape">
-            <el-pagination background layout="prev, pager, next" :total="100">
+            <el-pagination background layout="prev, pager, next" :total="total" @size-change="handleSizeChange" @current-change="handleSizeChange">
             </el-pagination>
         </div>
-        <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
+        <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%" @close="closeUser">
             <el-form :model="user">
-                <el-form-item label="项目" :label-width="formLabelWidth">
+                <!-- <el-form-item label="项目" :label-width="formLabelWidth">
                     <el-select v-model="valuePlans" placeholder="请选择" @change="selectPlans($event)" value-key="id">
                         <el-option v-for="item in planLists" :key="item.name" :label="item.name" :value="item">
                         </el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="角色" :label-width="formLabelWidth">
                     <el-select v-model="valueRoles" placeholder="请选择" @change="selectRoles($event)" value-key="id">
                         <el-option v-for="item in rolesList" :key="item.name" :label="item.name" :value="item">
@@ -93,6 +98,7 @@
                 valueRoles: {},
                 valueProvince: {},
                 disabled: true,
+                total: 0,
                 user: {}
             }
         },
@@ -111,6 +117,7 @@
                 return result
             },
             filterRole(value, row) { //角色筛选
+                // console.log(row)
                 return row.role == value
             },
             filterProveince(value, row) { //省份筛选
@@ -118,6 +125,7 @@
             },
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
+                    this.total = res.data.total
                     let data = res.data.data
                     let roles = ['省用户', '网评专家', '实地专家', '督导']
                     data.forEach((item, index, arr) => {
@@ -138,21 +146,31 @@
                     this.userList = data
                 }, (err) => {})
             },
-            getYearPlans() { //获取年度计划列表
-                this.$ajax.get("/api/admin/plans").then((res) => {
-                    this.planLists = res.data.data.filter((item) => {
-                        return item.state == 'active'
-                    })
-                }, (err) => {
-                    console.log()
-                })
-            },
-            getRolesList(id) { //获取角色列表
-                this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
+            // getYearPlans() { //获取年度计划列表
+            //     this.$ajax.get("/api/admin/plans").then((res) => {
+            //         this.planLists = res.data.data.plans.filter((item) => {
+            //             return item.state == 'active'
+            //         })
+            //     }, (err) => {
+            //         console.log()
+            //     })
+            // },
+            getRolesList() { //获取角色列表
+                this.$ajax.get('/api/admin/roles').then((res) => {
                     this.rolesList = res.data.data
                     this.valueRoles = this.rolesList[0]
                     this.valueProvince = this.rolesList[0].province ? this.province[0] : {}
                     this.disabled = !this.rolesList[0].province
+                }, (err) => {})
+            },
+            handleSizeChange(value) {
+                var param = {
+                    page: value,
+                    province: this.userList[0].province,
+                    role_id: this.userList[0].role_id
+                }
+                this.$ajax.post("/api/admin/users/filter_user", param).then((res) => {
+                    this.userList = res.data.data
                 }, (err) => {})
             },
             selectPlans(value) { //选择年度计划列表
@@ -162,22 +180,49 @@
                 this.valueProvince = value.province ? this.province[0] : {}
                 this.disabled = !value.province
             },
+            closeUser() {
+                this.dialogFormVisible = false
+                this.valueRoles = {},
+                    this.valueProvince = {}
+                this.user = {}
+            },
             addUser() { //添加用户
                 var param = {
                     "name": this.user.name,
                     "mobile": this.user.tel,
-                    "plan_id": this.valuePlans.id,
+                    // "plan_id": this.valuePlans.id,
                     "role_id": this.valueRoles.id,
                     "province": this.valueProvince.code
                 }
                 this.$ajax.post("/api/admin/users", param).then((res) => {
-                    console.log(res)
+                    this.getUserList()
+                    this.closeUser()
+                    // res.data.data.provinceWz = ''
+                    // this.userList.push(res.data.data)
                 }, (err) => {})
+            },
+            delUser(row) {//删除用户
+                this.$ajax.delete(`/api/admin/users/${row.id}`).then((res) => {
+                    this.getUserList()
+                    this.$message({
+                        message: '删除成功',
+                        type: 'success'
+                    });
+                }, (err) => {})
+            },
+            resetPassWord(row){//重置密码
+                this.$ajax.post("/api/admin/users/update_password",{id:row.id}).then((res)=>{
+                    this.getUserList()
+                    this.$message({
+                        message: '重置成功',
+                        type: 'success'
+                    });
+                },(err)=>{})
             }
         },
         mounted() {
             this.getUserList()
-            this.getYearPlans()
+            this.getRolesList()
         }
     }
 </script>
