@@ -17,15 +17,15 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter">
+            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter" :filter-multiple="false">
             </el-table-column>
-            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter">
+            <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter" :filter-multiple="false">
             </el-table-column>
             <el-table-column label="操作">
             </el-table-column>
         </el-table>
         <div class="pape">
-            <el-pagination background layout="prev, pager, next" :total="100">
+            <el-pagination background layout="prev, pager, next" :total="total" @size-change="handleSizeChange" @current-change="handleSizeChange">
             </el-pagination>
         </div>
         <el-dialog title="添加" :visible.sync="dialogFormVisible" width="35%">
@@ -93,6 +93,7 @@
                 valueRoles: {},
                 valueProvince: {},
                 disabled: true,
+                total:0,
                 user: {}
             }
         },
@@ -111,6 +112,7 @@
                 return result
             },
             filterRole(value, row) { //角色筛选
+                // console.log(row)
                 return row.role == value
             },
             filterProveince(value, row) { //省份筛选
@@ -118,6 +120,7 @@
             },
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
+                    this.total = res.data.total
                     let data = res.data.data
                     let roles = ['省用户', '网评专家', '实地专家', '督导']
                     data.forEach((item, index, arr) => {
@@ -140,7 +143,7 @@
             },
             getYearPlans() { //获取年度计划列表
                 this.$ajax.get("/api/admin/plans").then((res) => {
-                    this.planLists = res.data.data.filter((item) => {
+                    this.planLists = res.data.data.plans.filter((item) => {
                         return item.state == 'active'
                     })
                 }, (err) => {
@@ -148,12 +151,22 @@
                 })
             },
             getRolesList(id) { //获取角色列表
-                this.$ajax.get(`/api/admin/roles?plan_id=${id}`).then((res) => {
+                this.$ajax.get('/api/admin/roles').then((res) => {
                     this.rolesList = res.data.data
                     this.valueRoles = this.rolesList[0]
                     this.valueProvince = this.rolesList[0].province ? this.province[0] : {}
                     this.disabled = !this.rolesList[0].province
                 }, (err) => {})
+            },
+            handleSizeChange(value){
+                var param = {
+                    page:value,
+                    province:this.userList[0].province,
+                    role_id:this.userList[0].role_id
+                }
+                this.$ajax.post("/api/admin/users/filter_user",param).then((res)=>{
+                    this.userList = res.data.data
+                },(err)=>{})
             },
             selectPlans(value) { //选择年度计划列表
                 this.getRolesList(value.id)
