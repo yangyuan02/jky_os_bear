@@ -218,6 +218,9 @@
                         type: 'success'
                     });
                 },(err)=>{})
+            },
+            editUser(){//修改用户
+
             }
         },
         mounted() {
