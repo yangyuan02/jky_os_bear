@@ -23,9 +23,9 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                    <el-button type="text" size="small">修改</el-button>
-                    <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
-                    <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
+                        <el-button type="text" size="small">修改</el-button>
+                        <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
+                        <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
 </template>
             </el-table-column>
         </el-table>
@@ -54,10 +54,10 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="姓名" :label-width="formLabelWidth">
-                    <el-input v-model="user.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                    <el-input v-model.trim="user.name" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
                 <el-form-item label="手机号码" :label-width="formLabelWidth">
-                    <el-input v-model="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
+                    <el-input v-model.trim="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -68,6 +68,7 @@
 </template>
 
 <script>
+    import validate from "@/widget/validate"
     export default {
         data() {
             return {
@@ -187,6 +188,18 @@
                 this.user = {}
             },
             addUser() { //添加用户
+                if (this.user.name == '' || this.user.name == undefined) {
+                    this.$message.error('用户名不能为空');
+                    return
+                }
+                if (this.user.tel == '' || this.user.tel == undefined) {
+                    this.$message.error('手机号不能为空');
+                    return
+                }
+                if (!validate.isMobile(this.user.tel)) {
+                     this.$message.error('手机号格式错误');
+                    return
+                }
                 var param = {
                     "name": this.user.name,
                     "mobile": this.user.tel,
@@ -201,7 +214,7 @@
                     // this.userList.push(res.data.data)
                 }, (err) => {})
             },
-            delUser(row) {//删除用户
+            delUser(row) { //删除用户
                 this.$ajax.delete(`/api/admin/users/${row.id}`).then((res) => {
                     this.getUserList()
                     this.$message({
@@ -210,17 +223,18 @@
                     });
                 }, (err) => {})
             },
-            resetPassWord(row){//重置密码
-                this.$ajax.post("/api/admin/users/update_password",{id:row.id}).then((res)=>{
+            resetPassWord(row) { //重置密码
+                this.$ajax.post("/api/admin/users/update_password", {
+                    id: row.id
+                }).then((res) => {
                     this.getUserList()
                     this.$message({
                         message: '重置成功',
                         type: 'success'
                     });
-                },(err)=>{})
+                }, (err) => {})
             },
-            editUser(){//修改用户
-
+            editUser() { //修改用户
             }
         },
         mounted() {
