@@ -125,7 +125,7 @@
                 return row.provinceWz == value
             },
             getUserList() { //获取用户列表
-                this.$ajax.get("/api/admin/users").then((res) => {
+                this.$ajax.get("/api/admin/users",).then((res) => {
                     this.total = res.data.total
                     let data = res.data.data
                     let roles = ['省用户', '网评专家', '实地专家', '督导']
@@ -147,15 +147,6 @@
                     this.userList = data
                 }, (err) => {})
             },
-            // getYearPlans() { //获取年度计划列表
-            //     this.$ajax.get("/api/admin/plans").then((res) => {
-            //         this.planLists = res.data.data.plans.filter((item) => {
-            //             return item.state == 'active'
-            //         })
-            //     }, (err) => {
-            //         console.log()
-            //     })
-            // },
             getRolesList() { //获取角色列表
                 this.$ajax.get('/api/admin/roles').then((res) => {
                     this.rolesList = res.data.data
@@ -203,15 +194,12 @@
                 var param = {
                     "name": this.user.name,
                     "mobile": this.user.tel,
-                    // "plan_id": this.valuePlans.id,
                     "role_id": this.valueRoles.id,
                     "province": this.valueProvince.code
                 }
                 this.$ajax.post("/api/admin/users", param).then((res) => {
                     this.getUserList()
                     this.closeUser()
-                    // res.data.data.provinceWz = ''
-                    // this.userList.push(res.data.data)
                 }, (err) => {})
             },
             delUser(row) { //删除用户
