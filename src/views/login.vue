@@ -67,7 +67,7 @@
             }
         },
         mounted(){
-            this.creatCode()
+            // this.creatCode()
         }
     }
 </script>
