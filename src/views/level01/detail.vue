@@ -107,7 +107,7 @@ export default {
     return {
       value:"",
       value6: "",
-      value_change: "",
+      value_change:[],
       checked:false,
       change_checked:false,
       roles:[],
@@ -209,6 +209,9 @@ export default {
       this.change_checked=false
       this.tab_user=this.roles[e].name
       this.role_id=this.roles[e].id
+      console.log(this.roles[e].begin_at)
+      this.value_change=this.roles[e].begin_at
+      // this.value_change.push(this.roles[e].end_at)
     },
      change_users:function(){//修改
      this.changeVisible= false

@@ -222,6 +222,8 @@
                 this.changeuserVisible=true
                 console.log(row);
                 this.alter_id=row.id
+                this.user.name=row.name
+                this.user.tel=row.mobile
             },
             alterUser() { //修改用户和手机号
                  if (this.user.name == '' || this.user.name == undefined) {
