@@ -23,7 +23,7 @@
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                        <el-button type="text" size="small">修改</el-button>
+                        <el-button type="text" size="small" @click="alterUser_show(scope.row)">修改</el-button>
                         <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
                         <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
 </template>
@@ -60,8 +60,22 @@
                     <el-input v-model.trim="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
+           
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addUser">确 定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="修改" :visible.sync="changeuserVisible" width="35%" @close="closeUser">
+            <el-form :model="user">
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                    <el-input v-model.trim="user.name" auto-complete="off" placeholder="请输入内容"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号码" :label-width="formLabelWidth">
+                    <el-input v-model.trim="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="alterUser()">确 定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -72,6 +86,7 @@
     export default {
         data() {
             return {
+                changeuserVisible:false,
                 dialogFormVisible: false,
                 form: {
                     name: ''
@@ -100,7 +115,8 @@
                 valueProvince: {},
                 disabled: true,
                 total: 0,
-                user: {}
+                user: {},
+                alter_id:""
             }
         },
         // filters:{
@@ -200,6 +216,33 @@
                 this.$ajax.post("/api/admin/users", param).then((res) => {
                     this.getUserList()
                     this.closeUser()
+                }, (err) => {})
+            },
+            alterUser_show(row) { //修改table
+                this.changeuserVisible=true
+                console.log(row);
+                this.alter_id=row.id
+            },
+            alterUser() { //修改用户和手机号
+                 if (this.user.name == '' || this.user.name == undefined) {
+                    this.$message.error('用户名不能为空');
+                    return
+                }
+                if (this.user.tel == '' || this.user.tel == undefined) {
+                    this.$message.error('手机号不能为空');
+                    return
+                }
+                if (!validate.isMobile(this.user.tel)) {
+                     this.$message.error('手机号格式错误');
+                    return
+                }
+                this.changeuserVisible=false
+                console.log(this.user)
+                console.log(this.user.name)
+                console.log(this.user.tel)
+                console.log(this.alter_id)
+                this.$ajax.post("/api/admin/users/bind_user", {"id":this.alter_id,"name":this.user.name,"mobile":this.user.tel}).then((res) => {
+                    this.getUserList()
                 }, (err) => {})
             },
             delUser(row) { //删除用户
