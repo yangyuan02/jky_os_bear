@@ -85,6 +85,15 @@ export default {
         }         
         }, (err) => {})
      },
+      add_setting:function(e){
+      this.setVisible = true
+      this.names=[]
+      this.$ajax.post("/api/admin/users/set_leader",{"province":e,}).then((res) => {
+        for(var i=0;i<res.data.data.length;i++){
+          this.names.push(res.data.data[i].name)
+        }         
+        }, (err) => {})
+     },
   }
 };
 </script>

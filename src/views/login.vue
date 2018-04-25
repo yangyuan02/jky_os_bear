@@ -4,9 +4,9 @@
             <div class="ms-title">后台管理系统</div>
             <div class="login_content">
                 <div class="ms-login">
-                    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="0px" class="demo-ruleForm">
-                        <el-form-item prop="username">
-                            <el-input v-model="ruleForm.account" placeholder="username"></el-input>
+                    <el-form :model="ruleForm" ref="ruleForm" label-width="0px" class="demo-ruleForm">
+                        <el-form-item prop="username" >
+                            <el-input v-model="ruleForm.account" placeholder="username" ></el-input>
                         </el-form-item>
                         <el-form-item prop="password">
                             <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
@@ -66,6 +66,7 @@
                 },(err)=>{})
             }
         },
+
         mounted(){
             // this.creatCode()
         }
