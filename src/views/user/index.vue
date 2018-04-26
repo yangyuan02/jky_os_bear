@@ -17,16 +17,16 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter" :filter-multiple="false">
+            <el-table-column prop="provinceWz" label="省份筛选" :filter-method="filterProveince" :filters="provinceFilter" :filter-multiple="false" filter-placement="bottom-end">
             </el-table-column>
             <el-table-column prop="role" label="角色筛选" :filter-method="filterRole" :filters="rolesFilter" :filter-multiple="false">
             </el-table-column>
             <el-table-column label="操作">
                 <template slot-scope="scope">
-                        <el-button type="text" size="small">修改</el-button>
+                        <el-button type="text" size="small" @click="getModifyUser(scope.row)">修改</el-button>
                         <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
                         <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
-</template>
+                </template>
             </el-table-column>
         </el-table>
         <div class="pape">
@@ -64,6 +64,19 @@
                 <el-button type="primary" @click="addUser">确 定</el-button>
             </div>
         </el-dialog>
+        <el-dialog title="修改" :visible.sync="dialogFormVisible2" width="35%" @close="closeModifyUser">
+            <el-form :model="user" :userId="userId">
+                <el-form-item label="姓名" :label-width="formLabelWidth">
+                    <el-input v-model.trim="user.name" auto-complete="off" placeholder="请输入姓名"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号码" :label-width="formLabelWidth">
+                    <el-input v-model.trim="user.tel" auto-complete="off" placeholder="请输入手机号码"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="modifyUser">确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -73,6 +86,7 @@
         data() {
             return {
                 dialogFormVisible: false,
+                dialogFormVisible2: false,
                 form: {
                     name: ''
                 },
@@ -99,8 +113,11 @@
                 valueRoles: {},
                 valueProvince: {},
                 disabled: true,
-                total: 0,
-                user: {}
+                total: 1,
+                user: {},
+                userId:'',
+                checkedValue:'',
+                role_name:''
             }
         },
         // filters:{
@@ -117,12 +134,18 @@
                 }
                 return result
             },
-            filterRole(value, row) { //角色筛选
-                // console.log(row)
-                return row.role == value
+            filterRole(values, rows) { //角色筛选
+                this.role_name = values
+                console.log(this.role_name);
+                return rows.role === values
             },
             filterProveince(value, row) { //省份筛选
-                return row.provinceWz == value
+                this.checkedValue = value
+                console.log(this.checkedValue);
+                return row.provinceWz === value
+            },
+            changeEvent(filters){
+                console.log('filters',filters)
             },
             getUserList() { //获取用户列表
                 this.$ajax.get("/api/admin/users").then((res) => {
@@ -139,10 +162,12 @@
                                 item.provinceWz = '未知'
                             }
                         }
-                        let obj = {}
-                        obj.text = item.provinceWz
-                        obj.value = item.provinceWz
-                        this.provinceFilter.push(obj)
+                        // let obj = {}
+                        // obj.text = item.provinceWz
+                        // obj.value = item.provinceWz
+                        // this.provinceFilter.push(obj)
+                        // console.log(this.provinceFilter);
+
                     })
                     this.userList = data
                 }, (err) => {})
@@ -165,13 +190,43 @@
                 }, (err) => {})
             },
             handleSizeChange(value) {
+                console.log(this.province);
+                var allRoles = ['省用户', '网评专家', '实地专家', '督导']
+                var role_id
+                for (let m = 0; m < allRoles.length; m++) {
+                   if(this.role_name==allRoles[m]){
+                        role_id=m+1;
+                   }
+
+                }
+                var province_code
+                for (let n = 0; n < this.province.length; n++) {
+                    if(this.checkedValue==this.province[n].name){
+                        province_code=this.province[n].code
+                    }
+
+                }
                 var param = {
                     page: value,
-                    province: this.userList[0].province,
-                    role_id: this.userList[0].role_id
+                    province: province_code,
+                    role: role_id
                 }
-                this.$ajax.post("/api/admin/users/filter_user", param).then((res) => {
-                    this.userList = res.data.data
+                console.log(param);
+                this.$ajax.get("/api/admin/users?page="+value+"&role="+ role_id+"&province="+province_code).then((res) => {
+                   let data = res.data.data
+                    let roles = ['省用户', '网评专家', '实地专家', '督导']
+                    data.forEach((item, index, arr) => {
+                        item.role = roles[item.role_id - 1]
+                        for (var i = 0; i < this.province.length; i++) {
+                            if (item.province == this.province[i].code) {
+                                item.provinceWz = this.province[i].name
+                            }
+                            if (item.province == null) {
+                                item.provinceWz = '未知'
+                            }
+                        }
+                    })
+                    this.userList = data
                 }, (err) => {})
             },
             selectPlans(value) { //选择年度计划列表
@@ -184,7 +239,15 @@
             closeUser() {
                 this.dialogFormVisible = false
                 this.valueRoles = {},
-                    this.valueProvince = {}
+                this.valueProvince = {}
+                this.user = {}
+            },
+            getModifyUser(row){
+                this.dialogFormVisible2 = true
+                this.userId = row.id;
+            },
+            closeModifyUser(){
+                this.dialogFormVisible2 = false
                 this.user = {}
             },
             addUser() { //添加用户
@@ -214,6 +277,24 @@
                     // this.userList.push(res.data.data)
                 }, (err) => {})
             },
+            modifyUser(){//修改用户数据
+                if(this.user.tel){
+                    if (!validate.isMobile(this.user.tel)) {
+                        this.$message.error('手机号格式错误');
+                        return
+                    }
+                }
+                var param = {
+                    "name": this.user.name,
+                    "mobile": this.user.tel,
+                }
+                console.log(this.userId);
+                this.$ajax.patch("/api/admin/users/"+this.userId, param).then((res) => {
+                    this.getUserList()
+                    this.closeModifyUser()
+                }, (err) => {})
+
+            },
             delUser(row) { //删除用户
                 this.$ajax.delete(`/api/admin/users/${row.id}`).then((res) => {
                     this.getUserList()
@@ -240,6 +321,14 @@
         mounted() {
             this.getUserList()
             this.getRolesList()
+            for (let j = 0; j < this.province.length; j++) {
+                let arr = {};
+                arr.text = this.province[j].name
+                arr.value = this.province[j].name
+                this.provinceFilter.push(arr)
+
+            }
+            console.log(this.provinceFilter);
         }
     }
 </script>
