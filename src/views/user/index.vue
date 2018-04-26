@@ -60,6 +60,7 @@
                     <el-input v-model.trim="user.tel" auto-complete="off" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
+
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="addUser">确 定</el-button>
             </div>
@@ -85,6 +86,7 @@
     export default {
         data() {
             return {
+                changeuserVisible:false,
                 dialogFormVisible: false,
                 dialogFormVisible2: false,
                 form: {
@@ -117,7 +119,8 @@
                 user: {},
                 userId:'',
                 checkedValue:'',
-                role_name:''
+                role_name:'',
+                alter_id:""
             }
         },
         // filters:{
@@ -148,7 +151,7 @@
                 console.log('filters',filters)
             },
             getUserList() { //获取用户列表
-                this.$ajax.get("/api/admin/users").then((res) => {
+                this.$ajax.get("/api/admin/users",).then((res) => {
                     this.total = res.data.total
                     let data = res.data.data
                     let roles = ['省用户', '网评专家', '实地专家', '督导']
@@ -172,15 +175,6 @@
                     this.userList = data
                 }, (err) => {})
             },
-            // getYearPlans() { //获取年度计划列表
-            //     this.$ajax.get("/api/admin/plans").then((res) => {
-            //         this.planLists = res.data.data.plans.filter((item) => {
-            //             return item.state == 'active'
-            //         })
-            //     }, (err) => {
-            //         console.log()
-            //     })
-            // },
             getRolesList() { //获取角色列表
                 this.$ajax.get('/api/admin/roles').then((res) => {
                     this.rolesList = res.data.data
@@ -266,15 +260,41 @@
                 var param = {
                     "name": this.user.name,
                     "mobile": this.user.tel,
-                    // "plan_id": this.valuePlans.id,
                     "role_id": this.valueRoles.id,
                     "province": this.valueProvince.code
                 }
                 this.$ajax.post("/api/admin/users", param).then((res) => {
                     this.getUserList()
                     this.closeUser()
-                    // res.data.data.provinceWz = ''
-                    // this.userList.push(res.data.data)
+                }, (err) => {})
+            },
+            alterUser_show(row) { //修改table
+                this.changeuserVisible=true
+                console.log(row);
+                this.alter_id=row.id
+                this.user.name=row.name
+                this.user.tel=row.mobile
+            },
+            alterUser() { //修改用户和手机号
+                 if (this.user.name == '' || this.user.name == undefined) {
+                    this.$message.error('用户名不能为空');
+                    return
+                }
+                if (this.user.tel == '' || this.user.tel == undefined) {
+                    this.$message.error('手机号不能为空');
+                    return
+                }
+                if (!validate.isMobile(this.user.tel)) {
+                     this.$message.error('手机号格式错误');
+                    return
+                }
+                this.changeuserVisible=false
+                console.log(this.user)
+                console.log(this.user.name)
+                console.log(this.user.tel)
+                console.log(this.alter_id)
+                this.$ajax.post("/api/admin/users/bind_user", {"id":this.alter_id,"name":this.user.name,"mobile":this.user.tel}).then((res) => {
+                    this.getUserList()
                 }, (err) => {})
             },
             modifyUser(){//修改用户数据

@@ -20,7 +20,7 @@
                     </p>
                     </p>
                     <p class="plan-button m15">
-                    <span class="add-btn" @click="setVisible = true">
+                    <span class="add-btn" @click="setting(expert.province)">
                         <i class="el-icon-setting"></i>
                         组长设置
                     </span>
@@ -53,7 +53,7 @@ export default {
             name: "",
         },
         checkedname:[],
-        names:['路师生', '王良铮', '刘以可', '赵雯', '赵学线'],
+        names:[],
         formLabelWidth: "60px",
         expertList:[],
     };
@@ -76,9 +76,24 @@ export default {
         }, (err) => {})
 
      },
-
-
-
+     setting:function(e){
+      this.setVisible = true
+      this.names=[]
+      this.$ajax.post("/api/admin/users/shidi_expert_user",{"province":e,}).then((res) => {
+        for(var i=0;i<res.data.data.length;i++){
+          this.names.push(res.data.data[i].name)
+        }         
+        }, (err) => {})
+     },
+      add_setting:function(e){
+      this.setVisible = true
+      this.names=[]
+      this.$ajax.post("/api/admin/users/set_leader",{"province":e,}).then((res) => {
+        for(var i=0;i<res.data.data.length;i++){
+          this.names.push(res.data.data[i].name)
+        }         
+        }, (err) => {})
+     },
   }
 };
 </script>

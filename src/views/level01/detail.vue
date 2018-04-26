@@ -3,15 +3,16 @@
     <h3 class="detail-title">角色详情</h3>
     <div class="content on-plan">
       <ul class="on-plan-list">
-        <li @click="addroles_show">
+        <!-- <li @click="addroles_show">
           <i class="el-icon-plus"></i>
-        </li>
+        </li> -->
         <li class="on-li" v-for="(role,index) in roles">
             <p class="plan-name m15">{{role.name}}</p>
             <div class=" m15">
               <p class="roles">
                 <span class="roles-left">工作时段：</span>
-                <span class="roles-right">{{role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at.slice(6,10).replace(/-/ig,'.')}}</span>
+                <span class="roles-right">{{role.begin_at==null?0:role.begin_at.slice(0,10).replace(/-/ig,'.')}}-{{role.end_at==null?0:role.end_at.slice(6,10).replace(/-/ig,'.')}}</span>
+              
               </p>
               <p class="roles">
                 <span class="roles-left">成员人数：</span>
@@ -22,6 +23,10 @@
               <span class="add-btn" @click="addusers_show(index)">
                 <i class="el-icon-circle-plus-outline"></i>
                 添加成员
+              </span>
+              <span class="add-btn" @click="change_show(index)">
+                <i class="el-icon-edit"></i>
+                修改
               </span>
             </p>
         </li>
@@ -44,7 +49,26 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
           <el-checkbox v-model="checked" style="width:50%;float:left;text-align: left;margin-left: 5%;">是否与省份关联</el-checkbox>
-        <el-button type="primary" @click="addroles">确 定</el-button>
+        <el-button type="primary" @click="change_users">确 定</el-button>
+      </div>
+    </el-dialog>
+    <!--修改 -->
+    <el-dialog title="修改" :visible.sync="changeVisible" width="30%">
+      <el-form :model="form_change">
+        <div class="add_name">
+        <el-form-item label="名称" :label-width="formLabelWidth">
+          <a>{{tab_user}}</a>
+          <!-- <el-input v-model="form_change.name" auto-complete="off" placeholder="请输入内容"></el-input> -->
+        </el-form-item>
+        </div>
+         <el-form-item label="时间" :label-width="formLabelWidth" label-padding="0px 20px 0px 0px">
+        <el-date-picker v-model="value_change" type="daterange"  range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期" value-format="yyyy-MM-dd" style="width:80%;">
+       </el-date-picker>
+       </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+          <!-- <el-checkbox v-model="change_checked" style="width:50%;float:left;text-align: left;margin-left: 5%;">是否与省份关联</el-checkbox> -->
+        <el-button type="primary" @click="change_users">确 定</el-button>
       </div>
     </el-dialog>
     <!--添加 -->
@@ -78,21 +102,35 @@
 </template>
 
 <script>
+import validate from "@/widget/validate"
 export default {
   data() {
     return {
-      value:"",
+      value: "",
       value6: "",
-      checked:false,
-      roles:[],
-      areas:JSON.parse(window.localStorage.getItem("provinces")),
-      areas_show:false,
-      tab_user:"",
-      role_id:"",
+      value_change: [],
+      checked: false,
+      change_checked: false,
+      roles: [],
+      areas: JSON.parse(window.localStorage.getItem("provinces")),
+      areas_show: false,
+      tab_user: "",
+      role_id: "",
       addVisible: false,
+      changeVisible: false,
       dialogTableVisible: false,
       dialogFormVisible: false,
       form: {
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
+      },
+      form_change: {
         name: "",
         region: "",
         date1: "",
@@ -111,41 +149,53 @@ export default {
         type: [],
         resource: "",
         desc: "",
-        phone:"",
+        phone: ""
       },
       formLabelWidth: "60px",
-      expertList:[],
+      expertList: []
     };
   },
-  mounted () {
-    this.roleslist()
+  mounted() {
+    this.roleslist();
   },
   methods: {
-    addroles_show:function(){
-      this.dialogFormVisible = true
-      this.form.name=""
-      this.value6=""
-      this.checked=false
+    addroles_show: function() {
+      this.dialogFormVisible = true;
+      this.form.name = "";
+      this.value6 = "";
+      this.checked = false;
     },
-    addroles:function(){//添加角色
-    this.dialogFormVisible = false
-     console.log(this.form.name)
-     console.log(this.value6[0])
-     console.log(this.$route.params.planId)
-     console.log(this.checked)
-      this.$ajax.post("/api/admin/roles",{"name":this.form.name,"province":this.checked,
-      "begin_at":this.value6[0],"end_at":this.value6[1],})
-           .then((res) => {
-                    this.roleslist()
-                },(err)=>{})
-     },
-     roleslist:function(){//获取角色列表
-      this.$ajax.get('/api/admin/roles',{})
-           .then((res) => {
-                    this.roles=res.data.data
-                    console.log(res)
-                },(err)=>{})
-     },
+    addroles: function() {
+      //添加角色
+      this.dialogFormVisible = false;
+      console.log(this.form.name);
+      console.log(this.value6[0]);
+      console.log(this.$route.params.planId);
+      console.log(this.checked);
+      this.$ajax
+        .post("/api/admin/roles", {
+          name: this.form.name,
+          province: this.checked,
+          begin_at: this.value6[0],
+          end_at: this.value6[1]
+        })
+        .then(
+          res => {
+            this.roleslist();
+          },
+          err => {}
+        );
+    },
+    roleslist: function() {
+      //获取角色列表
+      this.$ajax.get("/api/admin/roles", {}).then(
+        res => {
+          this.roles = res.data.data;
+          console.log(this.roles);
+        },
+        err => {}
+      );
+    },
     //  provinces:function(){
     //    this.$ajax.get("/api/provinces",{})
     //        .then((res) => {
@@ -153,30 +203,84 @@ export default {
     //                 console.log(this.areas)
     //             },(err)=>{})
     //  },
-     addusers:function(){//添加用户
-     console.log(this.areas)
-     this.addVisible = false
-     console.log(this.form1.phone)
-     console.log(this.form1.name)
-     console.log(this.value)
-         this.$ajax.post("/api/admin/users",{"name":this.form1.name,"mobile":this.form1.phone,"province":this.value,"role_id":this.role_id,})
-           .then((res) => {
-                  this.addVisible = false
-                  this.roleslist()
-                },(err)=>{})
-     },
-     addusers_show:function(e){//添加用户显示
-     this.addVisible = true
-     this.tab_user=this.roles[e].name
-     this.role_id=this.roles[e].id
-     this.areas_show=this.roles[e].province
-     this.form1.phone=""
-     this.form1.name=""
-     this.value=""
-     console.log(e)
-
-     }
-
+    addusers: function() {
+      //添加用户
+      if(this.areas_show){
+       if (this.value == "" || this.value == undefined) {
+        this.$message.error("省份不能为空");
+        return;
+      }
+      }
+      if (this.form1.name == "" || this.form1.name == undefined) {
+        this.$message.error("用户名不能为空");
+        return;
+      }
+      if (this.form1.phone == "" || this.form1.phone == undefined) {
+        this.$message.error("手机号不能为空");
+        return;
+      }
+      if (!validate.isMobile(this.form1.phone)) {
+        this.$message.error("手机号格式错误");
+        return;
+      }
+      this.addVisible = false;
+      console.log(this.form1.phone);
+      console.log(this.form1.name);
+      console.log(this.value);
+      this.$ajax
+        .post("/api/admin/users", {
+          name: this.form1.name,
+          mobile: this.form1.phone,
+          province: this.value,
+          role_id: this.role_id
+        })
+        .then(
+          res => {
+            this.addVisible = false;
+            this.roleslist();
+          },
+          err => {}
+        );
+    },
+    change_show: function(e) {
+      this.changeVisible = true;
+      this.form_change.name = "";
+      this.value_change = "";
+      this.change_checked = false;
+      this.tab_user = this.roles[e].name;
+      this.role_id = this.roles[e].id;
+      console.log(this.roles[e].begin_at);
+      this.value_change = this.roles[e].begin_at;
+      // this.value_change.push(this.roles[e].end_at)
+    },
+    change_users: function() {
+      //修改
+      this.changeVisible = false;
+      console.log(this.value_change[0]);
+      this.$ajax
+        .patch("/api/admin/roles/" + this.role_id + "", {
+          end_at: this.value_change[1],
+          begin_at: this.value_change[0]
+        })
+        .then(
+          res => {
+            this.changeVisible = false;
+            this.roleslist();
+          },
+          err => {}
+        );
+    },
+    addusers_show: function(e) {
+      //添加用户显示
+      this.addVisible = true;
+      this.tab_user = this.roles[e].name;
+      this.role_id = this.roles[e].id;
+      this.areas_show = this.roles[e].province;
+      this.form1.phone = "";
+      this.form1.name = "";
+      this.value = "";
+      console.log(e);
+    }
   }
 };
 </script>
@@ -231,7 +335,7 @@ export default {
         .roles {
           color: @text-color;
           .roles-left {
-            padding-right:30px;
+            padding-right: 30px;
           }
         }
         .plan-button {
@@ -255,8 +359,8 @@ export default {
   .finished-plan {
     margin-top: 20px;
   }
-  .check_a{
-    display:inline-block;
+  .check_a {
+    display: inline-block;
     min-width: 106px;
   }
 }

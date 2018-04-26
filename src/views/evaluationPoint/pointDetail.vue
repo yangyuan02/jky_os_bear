@@ -26,7 +26,7 @@
                 prefix-icon="el-icon-search"
                 v-model="phone"
                 @keyup.enter.native="getNetworkExpert"
-                style="width:80%">
+                style="width:50%">
                 </el-input>
                 <el-button type="primary" style="width:15%;margin-left:20px;" @click="getNetworkExpert">搜索</el-button>
             </div>
