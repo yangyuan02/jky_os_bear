@@ -177,7 +177,7 @@
                     province: this.userList[0].province,
                     role_id: this.userList[0].role_id
                 }
-                this.$ajax.post("/api/admin/users/filter_user", param).then((res) => {
+                this.$ajax.get("/api/admin/users", param).then((res) => {
                     this.userList = res.data.data
                 }, (err) => {})
             },
