@@ -29,15 +29,14 @@
             </ul>
         </div>
         <!-- 组长设置      -->
-        <el-dialog title="组长设置" :visible.sync="setVisible" width="25%">
+        <el-dialog title="组长设置" :visible.sync="setVisible" width="25%" :province-code="provinceCode" @close="closeDialog" >
             <el-checkbox-group
         v-model="checkedname"
-        :min="0"
-        :max="1">
-        <a class="check_a" v-for="name in names"><el-checkbox  :label="name" :key="name">{{name}}</el-checkbox></a>
+        >
+        <a class="check_a" v-for="name in nameList"><el-checkbox  :label="name"></el-checkbox></a>
     </el-checkbox-group>
         <div slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="setVisible = false">确 定</el-button>
+            <el-button type="primary" @click="setGroupLeader(provinceCode)">确 定</el-button>
         </div>
         </el-dialog>
   </div>
@@ -53,15 +52,20 @@ export default {
             name: "",
         },
         checkedname:[],
-        names:[],
+        nameList:[],
         formLabelWidth: "60px",
         expertList:[],
+        provinceCode:''
     };
   },
   mounted () {
     this.getExpertList()
   },
   methods: {
+    closeDialog(){
+        this.setVisible = false
+        this.checkedname=[]
+      },
      getExpertList:function(){
          this.$ajax.get("/api/admin/teams?plan_id="+this.planId).then((res) => {
             var allExpert =res.data;
@@ -77,23 +81,33 @@ export default {
 
      },
      setting:function(e){
+         console.log(e);
       this.setVisible = true
-      this.names=[]
+      this.provinceCode = e;
+      this.nameList=[]
       this.$ajax.post("/api/admin/users/shidi_expert_user",{"province":e,}).then((res) => {
+          console.log(res);
         for(var i=0;i<res.data.data.length;i++){
-          this.names.push(res.data.data[i].name)
-        }         
+          this.nameList.push(res.data.data[i].name)
+        }
         }, (err) => {})
      },
       add_setting:function(e){
       this.setVisible = true
-      this.names=[]
+      this.nameList=[]
       this.$ajax.post("/api/admin/users/set_leader",{"province":e,}).then((res) => {
         for(var i=0;i<res.data.data.length;i++){
-          this.names.push(res.data.data[i].name)
-        }         
+          this.nameList.push(res.data.data[i].name)
+        }
         }, (err) => {})
      },
+     setGroupLeader(e){
+         this.setVisible = false
+         console.log(this.checkedname)
+         this.$ajax.post("/api/admin/users/set_leader",{"province":e,user_ids:this.checkedname}).then((res) => {
+             alert(res.data.message);
+        }, (err) => {})
+     }
   }
 };
 </script>
