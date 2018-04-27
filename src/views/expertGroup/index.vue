@@ -8,15 +8,16 @@
                     <p class=" m15">
                     <p class="roles">
                         <span class="roles-left">工作时段：</span>
-                        <span class="roles-right">{{expert.created_at.slice(0,10).replace(/-/ig,'.')}}-{{expert.updated_at.slice(6,10).replace(/-/ig,'.')}}</span>
+                        <span class="roles-right">2017.3.24</span>
+                        <!-- <span class="roles-right">{{expert.created_at.slice(0,10).replace(/-/ig,'.')}}-{{expert.updated_at.slice(6,10).replace(/-/ig,'.')}}</span> -->
                     </p>
                     <p class="roles">
                         <span class="roles-left">成员人数：</span>
-                        <span class="roles-right">0</span>
+                        <span class="roles-right">{{expert.user_total}}</span>
                     </p>
                     <p class="roles">
                         <span class="roles-left">组长：</span>
-                        <span class="roles-right">无</span>
+                        <span class="roles-right"><em v-for="leader in expert.user_leader ">{{leader}}</em></span>
                     </p>
                     </p>
                     <p class="plan-button m15">
@@ -68,7 +69,8 @@ export default {
       },
      getExpertList:function(){
          this.$ajax.get("/api/admin/teams?plan_id="+this.planId).then((res) => {
-            var allExpert =res.data;
+             console.log(res.data.data,this.province)
+            var allExpert =res.data.data.teams;
             for (var i = 0; i < allExpert.length; i++) {
                 for (var j = 0; j < this.province.length; j++) {
                     if(allExpert[i].province == this.province[j].code){

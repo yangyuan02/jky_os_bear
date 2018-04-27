@@ -17,7 +17,7 @@
             </el-table-column>
             <el-table-column prop="account" label="账号">
             </el-table-column>
-            <el-table-column column-key="provinces" prop="provinceWz" label="省份筛选"  :filters="provinceFilter" :filter-multiple="false" filter-placement="bottom-end">
+            <el-table-column  column-key="provinces" prop="provinceWz" label="省份筛选"  :filters="provinceFilter" :filter-multiple="false" filter-placement="bottom-end">
             </el-table-column>
             <el-table-column column-key="roles" prop="role" label="角色筛选"  :filters="rolesFilter" :filter-multiple="false">
             </el-table-column>
@@ -120,7 +120,8 @@
                 userId:'',
                 checkedValue:'',
                 role_name:'',
-                alter_id:""
+                alter_id:"",
+                current_page:''
             }
         },
         // filters:{
@@ -144,7 +145,7 @@
                 return row.provinceWz === value
             },
             changeFilter(filters){
-                var value = 1
+                var value = this.current_page
                 console.log('filters',filters)
                 if(filters.provinces){
                     this.checkedValue=filters.provinces[0]
@@ -229,7 +230,7 @@
                 }, (err) => {})
             },
             handleSizeChange(value) {
-                console.log(this.province);
+                this.current_page = value
                 var allRoles = ['省用户', '网评专家', '实地专家', '督导']
                 var role_id
                 for (let m = 0; m < allRoles.length; m++) {
@@ -408,7 +409,7 @@
     }
 </script>
 
-<style scoped lang="less">
+<style lang="less">
     .user_wrapper {
         .usre_head {
             display: flex;
@@ -426,10 +427,6 @@
     }
     .el-table-filter__list{
         max-height: 300px!important;
-        overflow-y: auto!important;
-    }
-    .el-table-filter{
-         max-height: 300px!important;
         overflow-y: auto!important;
     }
 </style>
