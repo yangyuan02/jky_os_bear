@@ -34,7 +34,7 @@
             <el-checkbox-group
         v-model="checkedname"
         >
-        <a class="check_a" v-for="name in nameList"><el-checkbox  :label="name"></el-checkbox></a>
+        <a class="check_a" v-for="name in nameList"><el-checkbox  :label="name.id">{{name.name}}</el-checkbox></a>
     </el-checkbox-group>
         <div slot="footer" class="dialog-footer">
             <el-button type="primary" @click="setGroupLeader(provinceCode)">确 定</el-button>
@@ -69,7 +69,6 @@ export default {
       },
      getExpertList:function(){
          this.$ajax.get("/api/admin/teams?plan_id="+this.planId).then((res) => {
-             console.log(res.data.data,this.province)
             var allExpert =res.data.data.teams;
             for (var i = 0; i < allExpert.length; i++) {
                 for (var j = 0; j < this.province.length; j++) {
@@ -83,14 +82,15 @@ export default {
 
      },
      setting:function(e){
-         console.log(e);
       this.setVisible = true
       this.provinceCode = e;
       this.nameList=[]
       this.$ajax.post("/api/admin/users/shidi_expert_user",{"province":e,}).then((res) => {
-          console.log(res);
         for(var i=0;i<res.data.data.length;i++){
-          this.nameList.push(res.data.data[i].name)
+            let arr = {};
+            arr.name = res.data.data[i].name
+            arr.id = res.data.data[i].id
+            this.nameList.push(arr)
         }
         }, (err) => {})
      },
@@ -105,9 +105,15 @@ export default {
      },
      setGroupLeader(e){
          this.setVisible = false
-         console.log(this.checkedname)
+         this.checkedname = this.checkedname.join(',');
          this.$ajax.post("/api/admin/users/set_leader",{"province":e,user_ids:this.checkedname}).then((res) => {
-             alert(res.data.message);
+             this.$message({
+                message: res.data.message,
+                type: 'success'
+            });
+             if(res.data.success){
+                 this.getExpertList();
+             }
         }, (err) => {})
      }
   }
@@ -163,7 +169,11 @@ export default {
         .roles {
           color: @text-color;
           .roles-left {
-            padding-right:30px;
+            padding-right:10px;
+          }
+          em{
+              font-style: normal;
+              font-size: 14px;
           }
         }
         .plan-button {
