@@ -474,7 +474,7 @@
                   }
                   console.log(this.choose_id.slice(1))
                 this.$ajax.post("/api/admin/assessment_experts/bind_assessment", {
-                    id: this.alter_id,
+                    user_id: this.alter_id,
                     assessment_ids: this.choose_id.slice(1),
                 }).then((res) => {
                     console.log(res)
