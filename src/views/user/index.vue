@@ -26,6 +26,7 @@
                         <el-button type="text" size="small" @click="getModifyUser(scope.row)">修改</el-button>
                         <el-button type="text" size="small" @click="resetPassWord(scope.row)">重置密码</el-button>
                         <el-button type="text" size="small" @click="delUser(scope.row)">删除</el-button>
+                        <el-button type="text" size="small" @click="addpointUser(scope.row)" v-show="scope.row.show">添加</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -78,6 +79,31 @@
                 <el-button type="primary" @click="modifyUser">确 定</el-button>
             </div>
         </el-dialog>
+        <!-- 网评添加 -->
+        <el-dialog title="网评专家" :visible.sync="dialogFormVisible3" @close="" width="40%">
+
+           <div>
+               <el-input
+                placeholder="请输入你需要的内容"
+                prefix-icon="el-icon-search"
+                v-model="phone"
+                @keyup.enter.native="getNetworkExpert"
+                style="width:50%">
+                </el-input>
+                <el-button type="primary" style="width:15%;margin-left:20px;" @click="">搜索</el-button>
+            </div>
+            <div style="margin-top:20px">
+                <el-table :data="gridData" style="width: 100%" height="350" @selection-change="chooseChange">
+                 <!--    <el-table-column prop="id" label="1234" width="200"></el-table-column> -->
+                    <el-table-column prop="content" label="评测点" width="400"></el-table-column>
+                    <el-table-column type="selection" width="100"></el-table-column>
+                </el-table>
+            </div>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogFormVisible3 = false">取 消</el-button>
+                <el-button type="primary" @click="userbingdingList" >确 定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -89,6 +115,10 @@
                 changeuserVisible:false,
                 dialogFormVisible: false,
                 dialogFormVisible2: false,
+                dialogFormVisible3: false,
+                phone:"",
+                gridData: [],
+                chooseChangelist:[],
                 form: {
                     name: ''
                 },
@@ -121,7 +151,7 @@
                 checkedValue:'',
                 role_name:'',
                 alter_id:"",
-                current_page:''
+                current_page:'',
             }
         },
         // filters:{
@@ -179,7 +209,7 @@
                     province: province_code,
                     role_id: role_id
                 }
-                this.$ajax.get("/api/admin/users?page="+value+"&role_id="+ role_id+"&province="+province_code).then((res) => {
+                this.$ajax.get("/api/admin/users?role_id="+ role_id+"&province="+province_code).then((res) => {
                    let data = res.data.data
                     let roles = ['省用户', '网评专家', '实地专家', '督导']
                     data.forEach((item, index, arr) => {
@@ -194,6 +224,13 @@
                         }
                     })
                     this.userList = data
+                    for(var i=0;i<this.userList.length;i++){
+                        if(this.userList[i].role=="网评专家"){
+                          this.userList[i]['show']=true
+                    }else{
+                       this.userList[i]['show']=false
+                    }
+                    }
                 }, (err) => {})
             },
             getUserList() { //获取用户列表
@@ -219,6 +256,16 @@
 
                     })
                     this.userList = data
+                    for(var i=0;i<this.userList.length;i++){
+                        if(this.userList[i].role=="网评专家"){
+                          this.userList[i]['show']=true
+                    }else{
+                       this.userList[i]['show']=false
+                    }
+
+                    }
+                    console.log("1234567890-")
+                    console.log(this.userList)
                 }, (err) => {})
             },
             getRolesList() { //获取角色列表
@@ -273,6 +320,15 @@
                         }
                     })
                     this.userList = data
+                   for(var i=0;i<this.userList.length;i++){
+                        if(this.userList[i].role=="网评专家"){
+                          this.userList[i]['show']=true
+                    }else{
+                       this.userList[i]['show']=false
+                    }
+                    
+                    }
+                    console.log(this.userList)
                 }, (err) => {})
             },
             selectPlans(value) { //选择年度计划列表
@@ -290,7 +346,9 @@
             },
             getModifyUser(row){
                 this.dialogFormVisible2 = true
-                this.userId = row.id;
+                this.userId = row.id
+                this.user.name=row.name
+                this.user.tel=row.mobile
             },
             closeModifyUser(){
                 this.dialogFormVisible2 = false
@@ -392,13 +450,42 @@
                 }, (err) => {})
             },
             editUser() { //修改用户
-            }
+            },
+            addpointUser(row) { //添加网评专家
+            this.dialogFormVisible3=true
+            this.alter_id=row.id
+            this.$ajax.get("/api/admin/assessment_experts/all_assessment").then((res) => {
+                  console.log(res)
+                  for(var i=0;i<res.data.data.length;i++){
+                      this.gridData.push(res.data.data[i])
+                  }
+                }, (err) => {})
+            },
+            chooseChange(val){
+               this.chooseChangelist=val
+               console.log(this.chooseChangelist)
+            },
+            userbingdingList(){
+              this.dialogFormVisible3=false
+                var choose_id=[]
+              for(var i=0;i<this.chooseChangelist.length;i++){
+                      choose_id.push(this.chooseChangelist[i].id)
+                  }
+                  console.log(choose_id)
+                this.$ajax.post("/api/admin/assessment_experts/bind_assessment", {
+                    id: this.alter_id,
+                    assessment_ids: choose_id,
+                }).then((res) => {
+                    console.log(res)
+                }, (err) => {})
+           
+           },
         },
         mounted() {
             this.getUserList()
             this.getRolesList()
             for (let j = 0; j < this.province.length; j++) {
-                let arr = {};
+                let arr = {}
                 arr.text = this.province[j].name
                 arr.value = this.province[j].name
                 this.provinceFilter.push(arr)
