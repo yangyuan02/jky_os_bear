@@ -152,6 +152,7 @@
                 role_name:'',
                 alter_id:"",
                 current_page:'',
+                choose_id:""
             }
         },
         // filters:{
@@ -467,14 +468,14 @@
             },
             userbingdingList(){
               this.dialogFormVisible3=false
-                var choose_id=[]
+              this.choose_id=""
               for(var i=0;i<this.chooseChangelist.length;i++){
-                      choose_id.push(this.chooseChangelist[i].id)
+                      this.choose_id=this.choose_id+","+this.chooseChangelist[i].id
                   }
-                  console.log(choose_id)
+                  console.log(this.choose_id.slice(1))
                 this.$ajax.post("/api/admin/assessment_experts/bind_assessment", {
                     id: this.alter_id,
-                    assessment_ids: choose_id,
+                    assessment_ids: this.choose_id.slice(1),
                 }).then((res) => {
                     console.log(res)
                 }, (err) => {})

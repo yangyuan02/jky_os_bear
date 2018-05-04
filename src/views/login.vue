@@ -6,10 +6,10 @@
                 <div class="ms-login">
                     <el-form :model="ruleForm" ref="ruleForm" label-width="0px" class="demo-ruleForm">
                         <el-form-item prop="account" :rules="{required: true, message: '请输入用户名', trigger: 'blur'}">
-                            <el-input v-model="ruleForm.account" placeholder="" type="account" auto-complete="off"></el-input>
+                            <el-input v-model="ruleForm.account" placeholder="请输入用户名" type="account" auto-complete="off"></el-input>
                         </el-form-item>
                         <el-form-item prop="password" :rules="{required: true, message: '请输入密码', trigger: 'blur'}">
-                            <el-input type="password" placeholder="password" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
+                            <el-input type="password" placeholder="请输入密码" v-model="ruleForm.password" @keyup.enter.native="submitForm('ruleForm')"></el-input>
                         </el-form-item>
                         <div class="login-btn" @click="login(ruleForm)">
                             <el-button type="primary">登录</el-button>
