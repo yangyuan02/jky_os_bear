@@ -18,13 +18,13 @@ Vue.use(ElementUI);
 // 用钩子函数beforeEach()对路由进行判断
 router.beforeEach((to,from,next)=>{
 
-    if(to.name =='login' && window.localStorage.getItem("token")){  //解决登陆后 用户输入登录地址重定向到首页
+    if(to.name =='login' && window.localStorage.getItem("admin_token")){  //解决登陆后 用户输入登录地址重定向到首页
         next({
             path: '/home/detail'
           })
     }
     if(to.name !== 'login'){//除了登录页
-        if(window.localStorage.getItem("token")){
+        if(window.localStorage.getItem("admin_token")){
 
             next()
 

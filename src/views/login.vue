@@ -52,7 +52,7 @@
                 }, (err) => {})
             },
             login(){
-       
+
                 // console.log(this.ruleForm.username)
                  console.log(this.ruleForm.username)
                 this.$ajax.post("/api/admin_token",this.ruleForm).then((res)=>{
@@ -60,7 +60,7 @@
                         var token = res.data.jwt
                         var user = jsrsasign.KJUR.jws.JWS.parse(token).payloadObj
                         console.log(user)
-                        window.localStorage.setItem("token", JSON.stringify(token))
+                        window.localStorage.setItem("admin_token", JSON.stringify(token))
                         window.localStorage.setItem("plan", JSON.stringify(user.plan))//获取planId
                         window.localStorage.setItem("planName", JSON.stringify(user.plan_name))//获取plan_name
                         this.$router.push('./home/detail')

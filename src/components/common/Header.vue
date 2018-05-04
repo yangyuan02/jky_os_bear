@@ -25,7 +25,7 @@
         },
         methods:{
             logout(){ //el-dropdown-item没有click事件
-                window.localStorage.removeItem("token")
+                window.localStorage.removeItem("admin_token")
                 this.$router.replace({
                     "path": "/"
                 })
